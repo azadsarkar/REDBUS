@@ -1,0 +1,145 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Background color: Blue gradient */
+        body {
+            background: linear-gradient(135deg, #00c6ff, #0072ff); /* Blue gradient */
+            background-size: cover;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Card styling */
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background-color: rgba(230, 240, 255, 0.9); /* Light blue form */
+        }
+
+        /* Card header */
+        .card-header {
+            background-color: #0072ff;
+            color: #fff;
+            border-bottom: 2px solid #0059b3;
+        }
+
+        /* Form fields */
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            border-color: #0072ff; /* Blue border on focus */
+            box-shadow: 0 0 5px rgba(0, 114, 255, 0.5);
+        }
+
+        /* Submit button */
+        .btn-primary {
+            background-color: #00c6ff; /* Sky blue */
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #0072ff; /* Darker blue on hover */
+        }
+
+        /* Forgot password link */
+        a {
+            color: #0072ff; /* Blue */
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0059b3; /* Darker blue on hover */
+            text-decoration: underline;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3>Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>There were some errors with your submission:</strong>
+                                <ul>
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">Username</label>
+                            {{ form.username|add_class:"form-control" }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.password.id_for_label }}">Password</label>
+                            {{ form.password|add_class:"form-control" }}
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <a href="{% url 'forgate_password' %}">Forgot Password?</a>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p style="color:black;">Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

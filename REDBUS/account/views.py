@@ -14,15 +14,19 @@ from django.views.generic.edit import UpdateView, DeleteView
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
 
 def home(request):
+    
     if not request.user.is_authenticated:
-        return HttpResponseRedirect('/account/login/')
+        return HttpResponseRedirect('/login/')
     else:
-        return HttpResponseRedirect('/account/home/')
-
+        if request.user.is_superuser == True:
+            return render(request, 'bus_managment/dashbord.html')
         
+        return render(request, 'base.html')
+    
 """user Sign in form Class based View """
 
 class CustomerRegistration(TemplateView):
+    
     template_name = 'account/Signin.html'  
     def get(self, request, *args, **kwargs):
         
@@ -34,7 +38,7 @@ class CustomerRegistration(TemplateView):
         fm = CustomerSignupForm(request.POST)  
         if fm.is_valid():
             fm.save()  
-            messages.success(request, 'account are succesfully created')
+            messages.success(request, 'User registered successfully.')
             return redirect('home')
         else:  
             return render(request, self.template_name, {'form': fm})
@@ -49,17 +53,21 @@ class UserLogin(View):
             return render(request, 'account/login.html', {'form': form, 'user': request.user})
         else:
             # return redirect('home')
-           return HttpResponseRedirect('/account/home/')
-        
+            if request.user.is_superuser == True:
+                
+                   return redirect('deshbord')
+            else:
+                return redirect('home')
+            
     def post(self, request):
         if not request.user.is_authenticated:
             form = AuthenticationForm(data=request.POST)
             if form.is_valid():
                 user = form.get_user()
-                if user is not None and user.is_staff == True:
+                if user is not None and user.is_superuser == True:
                     auth.login(request, user)
                     # messages.success(request, 'You are Logged in')
-                    return redirect('deshbord')
+                    return redirect('dashboard')
                 # messages.success(request, 'You are Logged in')
                 login(request, user)
                 return redirect('home') 
@@ -76,7 +84,7 @@ class UserLogin(View):
  
 def user_log_out(request):
     logout(request)
-    return HttpResponseRedirect('/account/login/')
+    return HttpResponseRedirect('/login/')
 
 
 def desh_bord(request):

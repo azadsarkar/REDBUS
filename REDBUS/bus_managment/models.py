@@ -22,4 +22,18 @@ class BusRoute(models.Model):
     
     def __str__(self):
         return f'{self.sourse} {self.destinations}'
+
+
+class BusSchedule(models.Model):
+    bus_route_schedule = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
+    bus = models.ForeignKey(Bus, on_delete= models.CASCADE, null=True)
+    department_time = models.TimeField()
+    arrivale_time = models.TimeField()
+    tickit_price = models.IntegerField()
+    avalable_seates = models.IntegerField()
+  
+    def __str__(self):
+        return f'{self.department_time} {self.arrivale_time} {self.tickit_price} {self.avalable_seates}'
     
+
+

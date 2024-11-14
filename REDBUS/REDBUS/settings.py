@@ -138,3 +138,4 @@ EMAIL_HOST_USER = 'azadsarkar616@gmail.com'
 EMAIL_HOST_PASSWORD = 'naqk mpuz sgqo hohm'
 EMAIL_USE_TLS = True
 
+LOGIN_REDIRECT_URL = 'login/'

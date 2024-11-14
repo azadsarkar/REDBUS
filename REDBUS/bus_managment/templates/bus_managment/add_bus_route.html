@@ -4,14 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus Route</title>
+    <style>
+        /* Basic Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Center the form container */
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        /* Style the form */
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Style the form elements (inputs, textareas, etc.) */
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Style the submit button */
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
 </head>
 <body>
-    <form action="" method="post">
-
-        {% csrf_token %}
-        {{form1.as_p}}
-        <input type="submit" value="save">
-
-    </form>
+    <div class="form-container">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form1.as_p }}
+            <input type="submit" value="Save">
+        </form>
+    </div>
 </body>
 </html>

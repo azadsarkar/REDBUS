@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+
 {% block content %}
 
 <h1 style="text-align:center; color: #333;">***********BUS DETAILS*********************</h1>
+
 <a href="{% url 'add_bus' %}">
     <button type="button" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
         Add Bus and Bus Route
@@ -51,4 +53,20 @@
     </tbody>
 </table>
 
+<!-- Pagination Controls -->
+<div class="pagination-container">
+    <span class="pagination-controls">
+        {% if data.has_previous %}
+            <a href="?page={{ data.previous_page_number }}" class="pagination-link">Previous</a>
+        {% endif %}
+        
+        <span class="page-number">{{ data.number }}</span>
+        
+        {% if data.has_next %}
+            <a href="?page={{ data.next_page_number }}" class="pagination-link">Next</a>
+        {% endif %}
+    </span>
+</div>
+
 {% endblock %}
+

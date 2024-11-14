@@ -1,14 +1,19 @@
 from django.shortcuts import render, HttpResponse, redirect,get_object_or_404
 from .forms import BusForm, BusRoutForm, BusRouteScheduleForm
 from .models import BusRoute, BusSchedule
+from django.core.paginator import Paginator
 
 
 def home(request):
     if request.user.is_superuser and request.user.is_authenticated:
-        data = BusRoute.objects.all()
-        return render(request, 'bus_managment/dashbord.html',{'data':data})
+        all_data = BusRoute.objects.all().order_by('id')
+        paginator = Paginator(all_data,5, orphans=1)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        return render(request, 'bus_managment/dashbord.html',{'data':page_obj})
     else:
         return redirect("home")
+
 
 def bus(request):  
     if request.user.is_superuser and request.user.is_authenticated:
@@ -70,7 +75,8 @@ def delete_bus_route(request, id):
 
     else:
         return redirect("home")
-    
+   
+ 
 def bus_schedule(request):
     if request.user.is_superuser and request.user.is_authenticated:
         if request.method == "POST":
@@ -111,6 +117,7 @@ def update_schedule(request, id):
 
     else:
         return redirect("home")
+ 
     
 def delete_schedule(request, id):
     if request.user.is_superuser and request.user.is_authenticated:

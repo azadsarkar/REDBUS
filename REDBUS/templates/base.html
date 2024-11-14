@@ -5,7 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RedBus Clone</title>
     {% block extra_css %}
-    <!-- CSS can be included here -->
+    <style>
+        /* Style for the Pagination Container */
+.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Style for the pagination controls */
+.pagination-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Style for pagination links (Previous, Next) */
+.pagination-link {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+/* Pagination link hover effect */
+.pagination-link:hover {
+    background-color: #45a049;
+}
+
+/* Style for the current page number */
+.page-number {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+    </style>
     {% endblock %}
     {% load static %}
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">

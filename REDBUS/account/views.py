@@ -18,13 +18,14 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
 )
 
+""" Home Page """
 
 def home(request):
     
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
     else:
-        if request.user.is_superuser == True:
+        if request.user.is_superuser:
             # return render(request, "bus_managment/dashbord.html")
             return redirect('dashboard')
 

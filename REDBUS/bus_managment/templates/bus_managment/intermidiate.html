@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        margin-top: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+    }
+
+    .form-group input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        font-size: 18px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-group input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    .back-to-home {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 16px;
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .back-to-home:hover {
+        text-decoration: underline;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+        width: 100%;
+        background-color: #007BFF;
+        padding: 10px 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .navbar .nav-links {
+        display: flex;
+        justify-content: center;
+    }
+
+    .navbar .nav-links a {
+        color: white;
+        text-decoration: none;
+        margin: 0 15px;
+        font-size: 16px;
+    }
+
+    .navbar .nav-links a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive Design for Navbar */
+    @media (max-width: 768px) {
+        .navbar .nav-links {
+            flex-direction: column;
+        }
+
+        .navbar .nav-links a {
+            margin: 10px 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'bus_schedule' %}">Bus Schedule</a>
+            <a href="{% url 'intermidiate' %}">Add Intermediate Stop</a>
+        </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="container">
+        <h1>Add Intermediate Route</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            
+            <!-- Bus Route Field -->
+            <div class="form-group">
+                <label for="bus_route">Bus Route:</label>
+                {{ form.bus_route }}
+            </div>
+            
+            <!-- Stop Name Field -->
+            <div class="form-group">
+                <label for="stop_name">Stop Name:</label>
+                {{ form.stop_name }}
+            </div>
+            <div class="form-group">
+                <label for="stop_name">Arivel Time</label>
+                {{ form.intermidiate_stop_time }}
+            </div>
+
+            <!-- Intermediate Stop ID Field -->
+            <div class="form-group">
+                <label for="inter_stop_id">Intermediate Stop ID:</label>
+                {{ form.inter_stop_id }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <input type="submit" value="Add Intermediate Route">
+            </div>
+        </form>
+
+        <!-- Back to Home Link -->
+        <a href="{% url 'dashboard' %}" class="back-to-home">Back to Home</a>
+    </div>
+{% endblock %}

@@ -14,4 +14,5 @@ urlpatterns = [
    path('bus_schedul_details/',views.bus_schedule_details, name= 'bus_schedule_details'),
    path('update_schedule/<int:id>/', views.update_schedule, name='update_schedule'),
    path('delete_schedule/<int:id>/', views.delete_schedule, name='delete_schedule'),
+   path('intermidiate/',views.intermidiate_stop, name= "intermidiate"),
 ]

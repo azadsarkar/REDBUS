@@ -1,0 +1,180 @@
+/* Container */
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Heading */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: auto; /* Avoid fixed layout to allow content to adjust properly */
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    word-wrap: break-word; /* Allow long words to break and fit */
+    text-overflow: ellipsis;
+    overflow: visible; /* Ensure text is not hidden in most cases */
+}
+
+th {
+    background-color: #007BFF;
+    color: white;
+}
+
+td {
+    max-width: 150px; /* Prevent overflow in narrow columns */
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Action buttons */
+.actions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    justify-content: center; /* Center the buttons */
+    white-space: nowrap; /* Prevent text from breaking into multiple lines */
+}
+
+.action-btn {
+    padding: 6px 12px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn.update {
+    background-color: #4CAF50;
+}
+
+.action-btn.delete {
+    background-color: #FF4136;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+.action-btn.update:hover {
+    background-color: #45a049;
+}
+
+.action-btn.delete:hover {
+    background-color: #e02f2f;
+}
+
+/* Intermediate Stops Section */
+.stop-list {
+    display: none;
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.stop-item {
+    background-color: #f0f0f0;
+    padding: 5px;
+    margin: 2px 0;
+    border-radius: 4px;
+}
+
+/* Pagination */
+.pagination-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.pagination-controls {
+    display: inline-block;
+}
+
+.pagination-link {
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
+}
+
+.pagination-link:hover {
+    background-color: #0056b3;
+}
+
+.pagination-number {
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    .stop-list {
+        padding-left: 10px;
+    }
+
+    .action-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    /* Adjust Action Buttons for mobile screens */
+    .actions {
+        flex-direction: column; /* Stack buttons vertically on smaller screens */
+        align-items: flex-start; /* Align buttons to the left */
+    }
+}
+
+@media (max-width: 480px) {
+    th, td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .pagination-link {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    /* Stack buttons vertically even more compactly */
+    .actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

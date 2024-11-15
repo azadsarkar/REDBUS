@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
-{% block content %}
+    {% block content %}
 
 <h1 style="text-align:center; color: #333;">***********BUS DETAILS*********************</h1>
 
@@ -13,6 +13,11 @@
 <a href="{% url 'bus_schedule_details' %}">
     <button type="button" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
         Add Bus Schedule Details
+    </button>
+</a>
+<a href="{% url 'intermidiate' %}">
+    <button type="button" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+        Add intermidiate stop
     </button>
 </a>
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect,get_object_or_404
-from .forms import BusForm, BusRoutForm, BusRouteScheduleForm
-from .models import BusRoute, BusSchedule
+from .forms import BusForm, BusRoutForm, BusRouteScheduleForm, IntermidiateStopForm
+from .models import BusRoute, BusSchedule, IntermidiateStop
 from django.core.paginator import Paginator
 
 
@@ -81,6 +81,7 @@ def bus_schedule(request):
     if request.user.is_superuser and request.user.is_authenticated:
         if request.method == "POST":
             fm = BusRouteScheduleForm(request.POST)
+          
             if fm.is_valid():
                 fm.save()
                 return redirect('dashboard')
@@ -94,11 +95,36 @@ def bus_schedule(request):
     else:
         return redirect("home")
     
-            
+
 def bus_schedule_details(request):
     if request.user.is_superuser and request.user.is_authenticated:
-        data = BusSchedule.objects.all()
-        return render(request, 'bus_managment/bus_schedul_details.html', {'data':data})
+        data = BusSchedule.objects.all()  # Fetch all bus schedule records
+        bus_schedule_data = []
+        for schedule in data:
+            # Access the related BusRoute fields
+            bus_route = schedule.bus_route_schedule
+            sourse = bus_route.sourse
+            destinations = bus_route.destinations
+            # Retrieve all intermediate stops for this BusRoute
+            inter_stops = IntermidiateStop.objects.filter(bus_route=bus_route)
+            
+            # Add the relevant data to the list
+            bus_schedule_data.append({
+                'schedule': schedule,
+                'sourse': sourse,
+                'destinations': destinations,
+                'inter_stops': inter_stops,
+            })
+            
+        # all_data = BusRoute.objects.all().order_by('id')
+        paginator = Paginator(bus_schedule_data,5, orphans=1)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        
+        # Pass the data to the template
+        return render(request, 'bus_managment/bus_schedul_details.html', {
+            'bus_schedule_data': page_obj,
+        })
     else:
         return redirect("home")
     
@@ -127,3 +153,17 @@ def delete_schedule(request, id):
     
     else:
         return redirect("home")
+    
+    
+def intermidiate_stop(request):
+    if request.method == "GET":
+        fm = IntermidiateStopForm()
+        return render(request, "bus_managment/intermidiate.html", {'form':fm})
+    
+    if request.method == "POST":
+        fm = IntermidiateStopForm(request.POST)
+        if fm.is_valid():
+            fm.save()
+            return redirect("intermidiate")
+        else:
+            return redirect('dashboard')

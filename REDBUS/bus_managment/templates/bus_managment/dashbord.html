@@ -59,16 +59,16 @@
 </table>
 
 <!-- Pagination Controls -->
-<div class="pagination-container">
+<div class="pagination-container, my-5">
     <span class="pagination-controls">
         {% if data.has_previous %}
-            <a href="?page={{ data.previous_page_number }}" class="pagination-link">Previous</a>
+            <a href="?page={{ data.previous_page_number }}" class="pagination-link"><<</a>
         {% endif %}
         
         <span class="page-number">{{ data.number }}</span>
         
         {% if data.has_next %}
-            <a href="?page={{ data.next_page_number }}" class="pagination-link">Next</a>
+            <a href="?page={{ data.next_page_number }}" class="pagination-link">>></a>
         {% endif %}
     </span>
 </div>

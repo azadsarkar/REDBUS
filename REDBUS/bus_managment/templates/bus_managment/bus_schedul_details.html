@@ -1,105 +1,93 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
 
 {% block content %}
-    <script>
-        // Toggle the visibility of intermediate stops
-        function toggleStops(scheduleId) {
-            var stopList = document.getElementById('stops-' + scheduleId);
-            if (stopList.style.display === "none" || stopList.style.display === "") {
-                stopList.style.display = "block";
-            } else {
-                stopList.style.display = "none";
-            }
+<script>
+    // Toggle the visibility of intermediate stops
+    function toggleStops(scheduleId) {
+        var stopList = document.getElementById('stops-' + scheduleId);
+        if (stopList.style.display === "none" || stopList.style.display === "") {
+            stopList.style.display = "block";
+        } else {
+            stopList.style.display = "none";
         }
-    </script>
+    }
+</script>
 
-    <div class="container">
-        <h1>Bus Schedule</h1>
-        
-        <a href="{% url 'bus_schedule' %}">
-            <button type="button" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
-                Add Bus Schedule
-            </button>
-        </a>
+<div class="container py-5">
+    <h1 class="mb-4 ">Bus Schedule</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Route Schedule</th>
-                    <th>Bus</th>
-                    <th>Source</th>
-                    <th>Destination</th>
-                    <th>Departure Time</th>
-                    <th>Arrival Time</th>
-                    <th>Ticket Price</th>
-                    <th>Available Seats</th>
-                    <th>Intermediate Stops</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in bus_schedule_data %}
-                    <tr>
-                        <td>{{ item.schedule.id }}</td>
-                        <td>{{ item.sourse }} - {{ item.destinations }}</td>
-                        <td>{{ item.schedule.bus }}</td>
-                        <td>{{ item.sourse }}</td>
-                        <td>{{ item.destinations }}</td>
-                        <td>{{ item.schedule.department_time }}</td>
-                        <td>{{ item.schedule.arrivale_time }}</td>
-                        <td>{{ item.schedule.tickit_price }}</td>
-                        <td>{{ item.schedule.avalable_seates }}</td>
-                        <td>
-                            <!-- Button to toggle intermediate stops -->
-                            <button onclick="toggleStops({{ item.schedule.id }})" class="action-btn">
-                                Show/Hide Stops
-                            </button>
+    <a href="{% url 'bus_schedule' %}" class="btn btn-success mb-3">Add Bus Schedule</a>
 
-                            <!-- Intermediate stops list (hidden by default) -->
-                            <div id="stops-{{ item.schedule.id }}" class="stop-list" style="display: none;">
-                                <ul>
-                                    {% for stop in item.inter_stops %}
-                                        <li class="stop-item">{{ stop.stop_name }}</li>
-                                    {% empty %}
-                                        <li class="stop-item">No intermediate stops</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </td>
-                        <td class="actions">
-                            <!-- Update Button -->
-                            <a href="{% url 'update_schedule' item.schedule.id %}" class="action-btn update">Update</a>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Route Schedule</th>
+                <th>Bus</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Departure Time</th>
+                <th>Arrival Time</th>
+                <th>Ticket Price</th>
+                <th>Available Seats</th>
+                <th>Intermediate Stops</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in bus_schedule_data %}
+            <tr>
+                <td>{{ item.schedule.id }}</td>
+                <td>{{ item.sourse }} - {{ item.destinations }}</td>
+                <td>{{ item.schedule.bus }}</td>
+                <td>{{ item.sourse }}</td>
+                <td>{{ item.destinations }}</td>
+                <td>{{ item.schedule.department_time }}</td>
+                <td>{{ item.schedule.arrivale_time }}</td>
+                <td>{{ item.schedule.tickit_price }}</td>
+                <td>{{ item.schedule.avalable_seates }}</td>
+                <td>
+                    <!-- Button to toggle intermediate stops -->
+                    <button onclick="toggleStops({{ item.schedule.id }})" class="btn btn-link">
+                        Show/Hide Stops
+                    </button>
 
-                            <!-- Delete Button (with confirmation) -->
-                            <a href="{% url 'delete_schedule' item.schedule.id %}" onclick="return confirm('Are you sure you want to delete this record?');" class="action-btn delete">
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    <!-- Intermediate stops list (hidden by default) -->
+                    <div id="stops-{{ item.schedule.id }}" style="display: none;">
+                        <ul class="list-unstyled">
+                            {% for stop in item.inter_stops %}
+                            <li>{{ stop.stop_name }}</li>
+                            {% empty %}
+                            <li>No intermediate stops</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </td>
+                <td>
+                    <a href="{% url 'update_schedule' item.schedule.id %}" class="btn btn-warning btn-sm">Update</a>
+                    <a href="{% url 'delete_schedule' item.schedule.id %}" onclick="return confirm('Are you sure you want to delete this record?');" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div class="pagination-container">
-            <div class="pagination-controls">
-                {% if bus_schedule_data.has_previous %}
-                    <a href="?page={{ bus_schedule_data.previous_page_number }}" class="pagination-link">Previous</a>
-                {% endif %}
-                
-                <span class="pagination-number">Page {{ bus_schedule_data.number }} of {{ bus_schedule_data.paginator.num_pages }}</span>
-                
-                {% if bus_schedule_data.has_next %}
-                    <a href="?page={{ bus_schedule_data.next_page_number }}" class="pagination-link">Next</a>
-                {% endif %}
-            </div>
+    <div class="pagination-container mt-4 text-center">
+        <div class="pagination-controls d-inline-block">
+            {% if bus_schedule_data.has_previous %}
+            <a href="?page={{ bus_schedule_data.previous_page_number }}" class="btn btn-outline-secondary">Previous</a>
+            {% endif %}
+
+            <span class="mx-3">Page {{ bus_schedule_data.number }} of {{ bus_schedule_data.paginator.num_pages }}</span>
+
+            {% if bus_schedule_data.has_next %}
+            <a href="?page={{ bus_schedule_data.next_page_number }}" class="btn btn-outline-secondary">Next</a>
+            {% endif %}
         </div>
-
-        <a href="{% url 'dashboard' %}" style="display: block; text-align: center; margin-top: 20px; font-size: 16px; color: #007BFF;">Back to Home</a>
     </div>
 
+    <div class="text-center mt-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-link">Back to Home</a>
+    </div>
+</div>
 {% endblock %}

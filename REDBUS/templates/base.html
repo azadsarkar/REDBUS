@@ -4,61 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RedBus Clone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
     {% block extra_css %}
     <style>
-        /* Style for the Pagination Container */
-.pagination-container {
-    text-align: center;
-    margin-top: 20px;
-}
+        /* Page Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            flex: 1;
+        }
 
-/* Style for the pagination controls */
-.pagination-controls {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Style for pagination links (Previous, Next) */
-.pagination-link {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-/* Pagination link hover effect */
-.pagination-link:hover {
-    background-color: #45a049;
-}
-
-/* Style for the current page number */
-.page-number {
-    font-size: 16px;
-    color: #333;
-    font-weight: bold;
-}
-
+        /* Footer Styles */
+        footer {
+            background-color: black;
+            color: white;
+            padding: 20px 0;
+        }
+        footer .footer-links a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        footer .footer-links a:hover {
+            text-decoration: underline;
+        }
+        footer .social-icons a {
+            color: #6c757d;
+            margin: 0 10px;
+            font-size: 20px;
+        }
+        footer .social-icons a:hover {
+            color: #007bff;
+        }
     </style>
     {% endblock %}
     {% load static %}
-
-    
-    {% block external_css %}
-        
-  
-
+   
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    {% endblock  %}
 </head>
 <body>
     {% block Navbar %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="/">
-            <!-- Logo -->
             <img src="{% static 'images/logo.jpg' %}" alt="RedBus Logo" style="height: 40px;">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,35 +57,23 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a href="{% url 'home' %}" class="nav-link text-dark">HOME</a>
-                </li>
-                <li class="nav-item">
-                    <a href="/about" class="nav-link text-dark">ABOUT</a>
-                </li>
-                <li class="nav-item">
-                    <a href='{% url "contact" %}' class="nav-link text-dark">CONTACT</a>
-                </li>
+                <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">HOME</a></li>
+                <li class="nav-item"><a href="" class="nav-link text-dark">ABOUT</a></li>
+                <li class="nav-item"><a href='{% url "contact" %}' class="nav-link text-dark">CONTACT</a></li>
             </ul>
             <form class="form-inline my-2 my-lg-0 ml-auto" method="get">
                 <ul class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      PROFILE
-                    </a>
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PROFILE</a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     {% if user.is_authenticated %}
                         <a class="dropdown-item" href="{% url 'update' user.id %}">Update</a>
                     {% else %}
                         <a class="dropdown-item" href="{% url 'login' %}">Login</a>
                     {% endif %}
-                      <a class="dropdown-item"  href='{% url "user_logout" %}'>Logout</a>
-                      <a class="dropdown-item"  href='{% url "change_password" %}'>Change Password</a>
-                      
-                      {% comment %} <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">Something else here</a>
-                    </div> {% endcomment %}
+                        <a class="dropdown-item" href='{% url "user_logout" %}'>Logout</a>
+                        <a class="dropdown-item" href='{% url "change_password" %}'>Change Password</a>
+                    </div>
                 </ul>
-                {% comment %} <a href="{% url 'reset_password' user.id %}" class="btn btn-outline-dark my-2 my-sm-0 mx-4">Forgate Password</a> {% endcomment %}
             </form>
         </div>
     </nav>
@@ -105,27 +84,58 @@
         {% endblock %}
     </div>
 
-    <!-- Bootstrap JS, Popper.js and jQuery -->
+    {% block Footer %}
+    <footer>
+        <div class="container">
+            <div class="row">
+                <!-- About Section -->
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p class="small">RedBus Clone is a reliable platform for booking bus tickets with ease. We strive to provide the best user experience for seamless travel planning.</p>
+                </div>
+                <!-- Quick Links Section -->
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="">About</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <!-- Social Media Section -->
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="small">© 2024 RedBus Clone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    {% endblock Footer %}
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
-        // Check if there are any messages on the page
         document.addEventListener('DOMContentLoaded', function() {
-            // Select all messages in the container
             var messages = document.getElementById('message-container');
-            
             if (messages) {
-                
                 setTimeout(function() {
                     messages.style.transition = "opacity 1s";
                     messages.style.opacity = 0;
-
                     setTimeout(function() {
                         messages.remove();
-                    }, 1000);  
-                }, 2000);  // Delay for 2 seconds before fading out
+                    }, 1000);
+                }, 2000);
             }
         });
     </script>

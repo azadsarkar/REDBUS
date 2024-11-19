@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedBus Clone</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    {% block extra_css %}
+    <style>
+        /* Page Layout */
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+    
+        }
+
+        .container {
+            flex: 1;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: black;
+            color: white;
+            padding: 20px 0;
+        }
+
+        footer .footer-links a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        footer .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        footer .social-icons a {
+            color: #6c757d;
+            margin: 0 10px;
+            font-size: 20px;
+        }
+
+        footer .social-icons a:hover {
+            color: #007bff;
+        }
+
+        .hero-section {
+            background: url('https://via.placeholder.com/1920x600') no-repeat center center/cover;
+            height: 60vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            
+        }
+
+        .search-form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            margin-top:20px;
+            color:black;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .featured-routes img {
+            border-radius: 10px;
+            max-height: 200px;
+        }
+
+        .featured-routes .btn {
+            margin-top: auto;
+            margin-right: 0;
+        }
+    </style>
+    {% endblock %}
+    {% load static %}
+   
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    {% block Navbar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'images/logo.jpg' %}" alt="RedBus Logo" style="height: 40px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">HOME</a></li>
+                <li class="nav-item"><a href="" class="nav-link text-dark">ABOUT</a></li>
+                <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link text-dark">CONTACT</a></li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0 ml-auto" method="get">
+                <ul class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">PROFILE</a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+                        {% if user.is_authenticated %}
+                        <a class="dropdown-item" href="{% url 'update' user.id %}">Update</a>
+                        <a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a>
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    {% else %}
+                    <a class="dropdown-item" href="{% url 'login' %}">Login</a>
+                    <a class="dropdown-item" href="{% url 'signup' %}">Sign Up</a>
+                    {% endif %}
+                       
+                    </div>
+                </ul>
+            </form>
+        </div>
+    </nav>
+    {% endblock Navbar %}
+
+    <div class="hero-section mb-2" style = "padding-bottom:10px;">
+        <div class="search-form">
+            <h1>Book Your Bus Tickets</h1>
+            <p>Fast, Easy, and Reliable Travel Booking</p>
+            <form action="#" method="POST" class="row">
+                {% csrf_token %}
+                <div class="form-group col-md-4">
+                    <label for="source">Source</label>
+                    <input type="text" id="sourse" name="sourse" class="form-control" placeholder="Enter source city" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" name="destination" class="form-control" placeholder="Enter destination city" required>
+                </div>
+                <div class="form-group col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-block">Search Buses</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    {% block BusData %}
+        
+   
+        
+    <h2 class="text-center mt-4">Popular Routes</h2>
+    {% for bus_details in data %}
+    <div class='container mt-3 text-white' style = "border-radius:32px; background-color:#da654c;">
+    <div class="container py-5 featured-routes">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <h5 class="card-title">{{ bus_details.bus_route_schedule.sourse }} to {{ bus_details.bus_route_schedule.destinations }}</h5>
+                 {{bus_details.bus.bus_name}} ({{bus_details.bus.bus_type}}) 
+                <p class="card-text">Enjoy comfortable travel at affordable rates.</p>
+            </div>
+            <div class="col-md-3 text-right">
+                <a href="#" class="btn btn-primary">Book Now</a>
+                <a href="{% url 'show_bus_details' bus_details.id %}" class="btn btn-primary">ViewBusDetails</a>
+            </div>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+    {% endblock BusData %}
+
+    {% block Footer %}
+    <footer class = "mt-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p class="small">RedBus Clone is a reliable platform for booking bus tickets with ease. We strive to provide the best user experience for seamless travel planning.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="">About</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <div class="social-icons">
+                        <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="small">© 2024 RedBus Clone. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    {% endblock Footer %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var messages = document.getElementById('message-container');
+            if (messages) {
+                setTimeout(function() {
+                    messages.style.transition = "opacity 1s";
+                    messages.style.opacity = 0;
+                    setTimeout(function() {
+                        messages.remove();
+                    }, 1000);
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -98,7 +98,7 @@ def bus_schedule(request):
 
 def bus_schedule_details(request):
     if request.user.is_superuser and request.user.is_authenticated:
-        data = BusSchedule.objects.all()  # Fetch all bus schedule records
+        data = BusSchedule.objects.all()  
         bus_schedule_data = []
         for schedule in data:
             # Access the related BusRoute fields
@@ -167,3 +167,11 @@ def intermidiate_stop(request):
             return redirect("intermidiate")
         else:
             return redirect('dashboard')
+        
+
+def show_bus_details(request, id):
+    
+    bus_schedule = get_object_or_404(BusSchedule, id=id)
+    available_seats = bus_schedule.avalable_seates 
+    
+    return render(request, 'bus_details.html', {"bus":bus_schedule})

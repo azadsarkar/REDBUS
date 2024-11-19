@@ -17,7 +17,7 @@ from bus_managment import views as bus_managment
 app_name = ""
 urlpatterns = [
     # path('accounts/login/',UserLogin.as_view(), name='login'),
-    path("home/", home, name="home"),
+    path("", home, name="home"),
     path("signup/", CustomerRegistration.as_view(), name="signup"),
     path("login/", UserLogin.as_view(), name="login"),
     path("logout/", user_log_out, name="user_logout"),

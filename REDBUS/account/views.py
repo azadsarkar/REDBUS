@@ -17,19 +17,41 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
 )
+from bus_managment.models import BusSchedule, BusRoute
 
 """ Home Page """
 
 def home(request):
     
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect("/login/")
+    if request.method == 'POST':
+       
+        sourse1 = request.POST['sourse'].strip()
+        sourse1 = sourse1.lower()
+        destination1 = request.POST['destination'].strip()
+        destination1 =  destination1.lower()
+        
+        data = BusSchedule.objects.all().order_by('id')
+        bus_details = []
+        for bus in data :
+            bus_data = bus.bus_route_schedule
+            bus_sourse = bus_data.sourse
+            bus_sourse = bus_sourse.lower()
+            bus_destination = bus_data.destinations
+            bus_destination = bus_destination.lower()
+            if bus_sourse == sourse1 and bus_destination == destination1:
+                bus_details.append(bus)
+        return render(request, 'home.html', {'data':bus_details})
     else:
-        if request.user.is_superuser:
-            # return render(request, "bus_managment/dashbord.html")
-            return redirect('dashboard')
+        data = BusSchedule.objects.all()
+        if not request.user.is_authenticated:
+            
+            return render(request, 'home.html', {"data":data})
+        else:
+            if request.user.is_superuser:
+                # return render(request, "bus_managment/dashbord.html")
+                return redirect('dashboard')
 
-        return render(request, "base.html")
+            return render(request, 'home.html', {"data":data})
 
 
 """user Sign in form Class based View """
@@ -98,7 +120,7 @@ class UserLogin(View):
 
 def user_log_out(request):
     logout(request)
-    return HttpResponseRedirect("/login/")
+    return HttpResponseRedirect("/")
 
 
 def desh_bord(request):

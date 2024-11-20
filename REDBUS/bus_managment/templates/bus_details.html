@@ -2,6 +2,7 @@
 
 {% block BusData %}
 <div class="container mt-3">
+    <h4>bus Id :- {{bus.id}}</h4>
     <h4>Bus Name: {{ bus.bus.bus_name }}</h4>
     <h4>Bus Route: {{ bus.bus_route_schedule.sourse }} To {{ bus.bus_route_schedule.destinations }}</h4>
     <p>Time: {{ bus.department_time }} To {{ bus.arrivale_time }}</p>
@@ -10,14 +11,14 @@
     {% comment %} <p>Available Seats: {{ bus.avalable_seates }}</p> {% endcomment %}
     
     <h5>Available Seats: {{bus.avalable_seates}}</h5>
-    {% comment %} <div class="d-flex flex-wrap">
+   <div class="d-flex flex-wrap">
         {% for i in available_seats_range %}
         <a href="#" class="btn btn-outline-primary m-1">Seat {{ i|add:1 }}</a>
         {% endfor %}
-    </div> {% endcomment %}
+    </div> 
 
     <div class="d-flex justify-content-between mt-4">
-        <a href="#" class="btn btn-primary">Book</a>
+        <a href="{% url 'bus_book' bus.id %}" class="btn btn-primary">Book</a>
         <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
     </div>
 </div>

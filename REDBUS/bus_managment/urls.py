@@ -15,6 +15,7 @@ urlpatterns = [
    path('update_schedule/<int:id>/', views.update_schedule, name='update_schedule'),
    path('delete_schedule/<int:id>/', views.delete_schedule, name='delete_schedule'),
    path('intermidiate/',views.intermidiate_stop, name= "intermidiate"),
-   path('show_bus_details/<int:id>',views.show_bus_details, name="show_bus_details"),
+   path('show_bus_details/<int:id>/',views.show_bus_details, name="show_bus_details"),
+   path('bus_book/<int:id>/',  views.book_ticket, name= 'bus_book'),
 ]
 

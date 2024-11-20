@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect,get_object_or_404
-from .forms import BusForm, BusRoutForm, BusRouteScheduleForm, IntermidiateStopForm
+from .forms import BusForm, BusRoutForm, BusRouteScheduleForm, IntermidiateStopForm, BusBookingForm
 from .models import BusRoute, BusSchedule, IntermidiateStop
 from django.core.paginator import Paginator
 
@@ -175,3 +175,31 @@ def show_bus_details(request, id):
     available_seats = bus_schedule.avalable_seates 
     
     return render(request, 'bus_details.html', {"bus":bus_schedule})
+
+
+def book_ticket(request, id):
+    data = get_object_or_404(BusSchedule, id=id)
+    available_seats = data.avalable_seates
+
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            book_data = BusBookingForm(request.POST)
+            if book_data.is_valid():
+                bus_data = book_data.save(commit=False)
+                bus_data.user = request.user
+                bus_data.save()
+                seats = int(request.POST['seats'])
+                data.avalable_seates -= seats
+                data.save()
+                return redirect('home')
+            else:
+                return render(request, 'bus_managment/bus_booking.html', {"form": book_data, "seats_range": range(available_seats)})
+        else:
+            fm = BusBookingForm()
+            context = {
+                'form': fm,
+                'seats_range': range(1, available_seats + 1),  # Use range for looping in template
+            }
+            return render(request, 'bus_managment/bus_booking.html', context)
+    else:
+        return redirect("login")

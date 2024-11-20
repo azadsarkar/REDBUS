@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Bus, BusRoute, BusSchedule, IntermidiateStop
+from .models import Bus, BusRoute, BusSchedule, IntermidiateStop, BusBooking
+
 
 
 # Register your models here.
@@ -35,3 +36,7 @@ class IntermidiateStopAdmin(admin.ModelAdmin):
         "intermidiate_stop_time",
         "inter_stop_id",
     ]
+
+@admin.register(BusBooking)
+class BusBookingAdmin(admin.ModelAdmin):
+    list_display = ['id','customer_name', 'customer_age', 'user','customer_email', 'gender', 'seats']

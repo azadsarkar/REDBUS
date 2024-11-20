@@ -1,0 +1,149 @@
+{% extends 'home.html' %}
+
+{% block search %}
+<div style="text-align: center; margin: 20px 0;">
+    <h1 style="font-family: Arial, sans-serif; color: #4CAF50;">Book Your Ticket</h1>
+    <p style="color: #555;">Quick and easy ticket booking at your fingertips.</p>
+</div>
+{% endblock search %}
+
+{% block BusData %}
+<div style="display: flex; justify-content: center; margin-top: 30px;">
+    <div style="width: 600px; background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <!-- Available Seats -->
+        <h3 style="font-family: Arial, sans-serif; text-align: center; margin-bottom: 20px; color: #333;">Available Seats</h3>
+        <div class="d-flex flex-wrap justify-content-center" style="margin-bottom: 20px;">
+            {% for seat in seats_range %}
+                <span 
+                    class="seat btn btn-outline-primary m-1" 
+                    data-seat="{{ seat }}" 
+                    style="cursor: pointer; padding: 10px 15px; border-radius: 5px; font-size: 14px;">
+                    
+                    {% if seat|divisibleby:2 %}
+                    Seat {{ seat }}(W)
+                    {% else %}
+                    Seat {{ seat }}
+                    {% endif %}
+                        
+                    
+                </span>
+            {% endfor %}
+        </div>
+
+        <!-- Booking Form -->
+        <form action="" method="post" style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_customer_name" style="font-weight: bold; color: #333;">Name</label>
+                {{ form.customer_name }}
+                {% if form.customer_name.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {% for error in form.customer_name.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_customer_email" style="font-weight: bold; color: #333;">Email</label>
+                {{ form.customer_email }}
+                {% if form.customer_email.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {% for error in form.customer_email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Age -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_customer_age" style="font-weight: bold; color: #333;">Age</label>
+                {{ form.customer_age }}
+                {% if form.customer_age.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {% for error in form.customer_age.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Gender -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_gender" style="font-weight: bold; color: #333;">Gender</label>
+                {{ form.gender }}
+                {% if form.gender.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {% for error in form.gender.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Seats Selected -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="id_seats" style="font-weight: bold; color: #333;">Seats Selected: <span id="seatCount"></span></label>
+                {{ form.seats }}
+                <!-- Hidden input field for selected seats count -->
+                <input type="hidden" id="seatsInput" name="seats" value="0">
+                {% if form.seats.errors %}
+                    <div style="color: red; font-size: 12px;">
+                        {% for error in form.seats.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group" style="margin-top: 20px;">
+                <input type="submit" value="Confirm Book" 
+                    style="background-color: #4CAF50; color: white; border: none; border-radius: 4px; padding: 10px 20px; font-size: 16px; cursor: pointer; width: 100%; transition: background-color 0.3s;">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const seats = document.querySelectorAll(".seat");
+        const seatCountDisplay = document.getElementById("seatCount");
+        const seatsInput = document.getElementById("seatsInput");
+        const seatsField = document.querySelector("input[name='seats']");
+
+        let selectedSeats = [];
+
+        seats.forEach(seat => {
+            seat.addEventListener("click", function() {
+                const seatNumber = this.getAttribute("data-seat");
+
+                if (selectedSeats.includes(seatNumber)) {
+                    // Deselect seat
+                    selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+                    this.classList.remove("btn-primary");
+                    this.classList.add("btn-outline-primary");
+                } else {
+                    // Select seat
+                    selectedSeats.push(seatNumber);
+                    this.classList.remove("btn-outline-primary");
+                    this.classList.add("btn-primary");
+                }
+
+                // Update the seat count in the label
+                seatCountDisplay.textContent = selectedSeats.length;
+
+                // Update the hidden input field with the selected seats count
+                seatsInput.value = selectedSeats.length;
+
+                // Also update the form's seats input field (the value for submission)
+                seatsField.value = selectedSeats.length;
+            });
+        });
+    });
+</script>
+
+{% endblock BusData %}

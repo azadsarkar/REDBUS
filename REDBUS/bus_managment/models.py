@@ -1,5 +1,5 @@
 from django.db import models
-
+from account.models import User
 # Create your models here.
 
 
@@ -45,3 +45,15 @@ class IntermidiateStop(models.Model):
     def __str__(self):
         return f'{self.stop_name} {self.inter_stop_id}'
     
+    
+class BusBooking(models.Model):
+    GENDER_TYPE =(("M","male"),('F','Female'))
+    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    customer_name = models.CharField(max_length=30, null=False)
+    customer_age = models.IntegerField()
+    customer_email = models.EmailField(max_length=30)
+    gender = models.CharField(max_length=10,choices=GENDER_TYPE)
+    seats = models.IntegerField()
+    
+    def __str__(self):
+        return f'{self.customer_name}{self.customer_email}{self.seats}'

@@ -39,4 +39,4 @@ class IntermidiateStopAdmin(admin.ModelAdmin):
 
 @admin.register(BusBooking)
 class BusBookingAdmin(admin.ModelAdmin):
-    list_display = ['id','customer_name', 'customer_age', 'user','customer_email', 'gender', 'seats']
+    list_display = ['id','customer_name', 'customer_age', 'user','customer_email', 'gender', 'seats','payment_status','bus_schedule']

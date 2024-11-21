@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponse, redirect,get_object_or_404
+from django.http import JsonResponse
 from .forms import BusForm, BusRoutForm, BusRouteScheduleForm, IntermidiateStopForm, BusBookingForm
-from .models import BusRoute, BusSchedule, IntermidiateStop
+from .models import BusRoute, BusSchedule, IntermidiateStop, BusBooking
 from django.core.paginator import Paginator
-
-
+import stripe
+from django.conf import settings
 def home(request):
     if request.user.is_superuser and request.user.is_authenticated:
         all_data = BusRoute.objects.all().order_by('id')
@@ -180,18 +181,20 @@ def show_bus_details(request, id):
 def book_ticket(request, id):
     data = get_object_or_404(BusSchedule, id=id)
     available_seats = data.avalable_seates
-
     if request.user.is_authenticated:
         if request.method == "POST":
             book_data = BusBookingForm(request.POST)
             if book_data.is_valid():
                 bus_data = book_data.save(commit=False)
                 bus_data.user = request.user
+                bus_data.bus_schedule = data
                 bus_data.save()
                 seats = int(request.POST['seats'])
                 data.avalable_seates -= seats
                 data.save()
-                return redirect('home')
+                # booking_data = request.POST
+                pay_ammount = seats * data.tickit_price
+                return render(request, 'checkout.html', {'data':bus_data,'pay_ammount':pay_ammount, 'bus_schedule_data':data})
             else:
                 return render(request, 'bus_managment/bus_booking.html', {"form": book_data, "seats_range": range(available_seats)})
         else:
@@ -203,3 +206,50 @@ def book_ticket(request, id):
             return render(request, 'bus_managment/bus_booking.html', context)
     else:
         return redirect("login")
+    
+    
+# stripe.api_key = "pk_test_51QN9cKP02zlMGOXjsahxhs1Gtg2YOtgD4Lz7ZY2leb0PTnr3SpZeGngDCyN9FLkDyw4k5OeA4qmwjmeW6TYSVHvl00Uu4P70Gt"
+stripe.api_key = settings.STRIPE_SECRET_KEY
+def create_session(request,id):
+    data = get_object_or_404(BusBooking, id =id)
+    if request.method == "POST":
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'inr',
+                        'product_data': {
+                            'name': 'Bus Ticket',  
+                        },
+                        'unit_amount': int(request.POST['ammount']) * 100,
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url=f'http://127.0.0.1:8000/bus_managment/success_session/{data.id}/',
+                cancel_url=f'http://127.0.0.1:8000/bus_managment/cencle_session/{data.id}/',
+            )
+            return redirect(session.url, code=303)  # Redirect user to Stripe Checkout
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    
+def cencle_session(request, id):
+    data = get_object_or_404(BusBooking, id = id)
+    bus_schedule_id = data.bus_schedule.id
+    bus_schedule_data = get_object_or_404(BusSchedule, id = bus_schedule_id)
+    bus_schedule_data.avalable_seates = bus_schedule_data.avalable_seates + data.seats
+    bus_schedule_data.save()
+    data.payment_status = 'cancle'
+    data.save()
+    
+    # return render(request, 'cencle_book.html')
+    return redirect('home')
+
+
+def success_session(request, id):
+    data = get_object_or_404(BusBooking, id = id)
+    data.payment_status = "success"
+    data.save()
+    
+    return render(request, 'success_book.html', {'data':data})

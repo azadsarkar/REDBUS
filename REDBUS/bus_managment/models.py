@@ -31,7 +31,7 @@ class BusSchedule(models.Model):
     avalable_seates = models.IntegerField()
 
     def __str__(self):
-        return f"{self.department_time} {self.arrivale_time} {self.tickit_price} {self.avalable_seates}"
+        return f"{self.bus.bus_name} ({self.department_time} To {self.arrivale_time})"
 
 
 class IntermidiateStop(models.Model):
@@ -47,13 +47,15 @@ class IntermidiateStop(models.Model):
     
     
 class BusBooking(models.Model):
-    GENDER_TYPE =(("M","male"),('F','Female'))
+    GENDER_TYPE =(("M","Male"),('F','Female'))
+    PAYMENT_STATUS = (('panding','Panding'),('success','Success'),('cancle','Cancle'))
+    bus_schedule = models.ForeignKey(BusSchedule,on_delete=models.CASCADE, null=True, blank= True)
     user = models.ForeignKey(User, on_delete= models.CASCADE)
     customer_name = models.CharField(max_length=30, null=False)
     customer_age = models.IntegerField()
     customer_email = models.EmailField(max_length=30)
     gender = models.CharField(max_length=10,choices=GENDER_TYPE)
     seats = models.IntegerField()
-    
+    payment_status = models.CharField(choices=PAYMENT_STATUS, max_length=20,default="panding")
     def __str__(self):
         return f'{self.customer_name}{self.customer_email}{self.seats}'

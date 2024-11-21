@@ -17,5 +17,8 @@ urlpatterns = [
    path('intermidiate/',views.intermidiate_stop, name= "intermidiate"),
    path('show_bus_details/<int:id>/',views.show_bus_details, name="show_bus_details"),
    path('bus_book/<int:id>/',  views.book_ticket, name= 'bus_book'),
+   path('checkout_session/<int:id>/', views.create_session, name='checkout_session'),
+   path('cencle_session/<int:id>/', views.cencle_session, name='cencle_session'),
+   path('success_session/<int:id>/', views.success_session, name='success_session'),
 ]
 

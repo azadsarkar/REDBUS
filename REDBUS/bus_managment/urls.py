@@ -20,5 +20,7 @@ urlpatterns = [
    path('checkout_session/<int:id>/', views.create_session, name='checkout_session'),
    path('cencle_session/<int:id>/', views.cencle_session, name='cencle_session'),
    path('success_session/<int:id>/', views.success_session, name='success_session'),
+   path('booking_history', views.booking_history, name='booking_history'),
+   path('delete_history/<int:id>/', views.history_delete, name='history_delete'),
 ]
 

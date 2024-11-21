@@ -59,3 +59,7 @@ class BusBooking(models.Model):
     payment_status = models.CharField(choices=PAYMENT_STATUS, max_length=20,default="panding")
     def __str__(self):
         return f'{self.customer_name}{self.customer_email}{self.seats}'
+    
+    def total_price(self):
+        total = self.bus_schedule.tickit_price * self.seats
+        return total

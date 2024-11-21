@@ -5,6 +5,8 @@ from .models import BusRoute, BusSchedule, IntermidiateStop, BusBooking
 from django.core.paginator import Paginator
 import stripe
 from django.conf import settings
+
+
 def home(request):
     if request.user.is_superuser and request.user.is_authenticated:
         all_data = BusRoute.objects.all().order_by('id')
@@ -253,3 +255,21 @@ def success_session(request, id):
     data.save()
     
     return render(request, 'success_book.html', {'data':data})
+
+def booking_history(request):
+    user = request.user
+    data = BusBooking.objects.all()
+    booking_list=[]
+    for data in data:
+        if data.user.username == user.username:
+            booking_list.append(data)   
+    paginator = Paginator(booking_list,10, orphans=2)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)    
+    return render(request, 'booking_history.html', {"data":page_obj})
+
+
+def history_delete(request, id):
+    history_data = get_object_or_404(BusBooking, id = id)
+    history_data.delete()
+    return redirect('booking_history')

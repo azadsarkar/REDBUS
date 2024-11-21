@@ -1,0 +1,93 @@
+{% extends 'home.html' %}
+
+{% block search %}
+<h2 style="text-align: center; color: #333;">Booking History</h2>
+{% endblock search %}
+
+{% block BusData %}
+<table border="1" cellspacing="0" cellpadding="10" style="width: 100%; border-collapse: collapse; text-align: center; background-color: #f9f9f9;">
+    <thead style="background-color: #4CAF50; color: white;">
+        <tr>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Seats</th>
+            <th>Bus Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bus_data in data %}
+        <tr id="row-{{ bus_data.id }}" style="background-color: #ffffff; border-bottom: 1px solid #ddd;">
+            <td>{{ bus_data.customer_name }}</td>
+            <td>{{ bus_data.customer_email }}</td>
+            <td>{{ bus_data.customer_age }}</td>
+            <td>{{ bus_data.gender }}</td>
+            <td>{{ bus_data.seats }}</td>
+            <td>{{ bus_data.bus_schedule.bus.bus_name }}</td>
+            <td>
+                <a href="{% url 'history_delete' bus_data.id %}" onclick="performAction(event, '{{ bus_data.id }}')">
+                    <button style="background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">DELETE</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination-container mt-4 text-center">
+    <div class="pagination-controls d-inline-block">
+        {% if data.has_previous %}
+        <a href="?page={{ data.previous_page_number }}" class="btn btn-outline-secondary">Previous</a>
+        {% endif %}
+
+        <span class="mx-3">Page {{ data.number }} of {{ data.paginator.num_pages }}</span>
+
+        {% if data.has_next %}
+        <a href="?page={{ data.next_page_number }}" class="btn btn-outline-secondary">Next</a>
+        {% endif %}
+    </div>
+</div>
+<script>
+    function performAction(event, id) {
+        // Prevent the link from following its href (#)
+        event.preventDefault();
+        
+        // Confirm deletion action with a Cancel option
+        const userConfirmed = confirm('Are you sure you want to delete the booking with ID: ' + id + '?');
+
+        if (userConfirmed) {
+            // If confirmed, perform the action (AJAX request to delete the booking)
+            deleteBooking(id);
+        } else {
+            // If canceled, show a message and do nothing
+            alert('Deletion cancelled for booking ID: ' + id);
+        }
+    }
+
+    function deleteBooking(id) {
+        // Perform AJAX request to delete the booking
+        fetch('/delete/' + id, {
+            method: 'DELETE', // Adjust the HTTP method as required by your server
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // If deletion was successful, remove the row from the table
+                const row = document.getElementById('row-' + id);
+                if (row) {
+                    row.remove();  // Remove the row from the DOM
+                }
+                alert('Booking ID ' + id + ' has been deleted.');
+            } else {
+                alert('Failed to delete booking ID: ' + id);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting booking: ' + error);
+        });
+    }
+</script>
+{% endblock BusData %}

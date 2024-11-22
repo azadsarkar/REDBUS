@@ -7,6 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     {% block extra_css %}
+    {% endblock extra_css %}
     <style>
         /* Page Layout */
         html, body {
@@ -75,23 +76,29 @@
             margin-top: auto;
             margin-right: 0;
         }
+        
+        #nav{
+            position:fixed;
+            width:100vw;
+            z-index: 100;
+        
+        }
     </style>
-    {% endblock %}
     {% load static %}
    
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body style="position: relative;">
     {% block Navbar %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id = 'nav'>
         <a class="navbar-brand" href="/">
             <img src="{% static 'images/logo.jpg' %}" alt="RedBus Logo" style="height: 40px;">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
+        <div class="collapse navbar-collapse" id="navbarNav" >
+            <ul class="navbar-nav mx-auto" >
                 <li class="nav-item"><a href="{% url 'home' %}" class="nav-link text-dark">HOME</a></li>
                 <li class="nav-item"><a href="" class="nav-link text-dark">ABOUT</a></li>
                 <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link text-dark">CONTACT</a></li>
@@ -120,7 +127,7 @@
 
 {% block search %}
     
-    <div class="hero-section mb-2" style = "padding-bottom:10px;">
+    <div class="hero-section mb-2 mt-5" style = "padding-bottom:10px; padding-top:20px;">
         <div class="search-form">
             <h1>Book Your Bus Tickets</h1>
             <p>Fast, Easy, and Reliable Travel Booking</p>

@@ -5,6 +5,7 @@ from .models import BusRoute, BusSchedule, IntermidiateStop, BusBooking
 from django.core.paginator import Paginator
 import stripe
 from django.conf import settings
+from django.core.mail import send_mail
 
 
 def home(request):
@@ -209,8 +210,6 @@ def book_ticket(request, id):
     else:
         return redirect("login")
     
-    
-# stripe.api_key = "pk_test_51QN9cKP02zlMGOXjsahxhs1Gtg2YOtgD4Lz7ZY2leb0PTnr3SpZeGngDCyN9FLkDyw4k5OeA4qmwjmeW6TYSVHvl00Uu4P70Gt"
 stripe.api_key = settings.STRIPE_SECRET_KEY
 def create_session(request,id):
     data = get_object_or_404(BusBooking, id =id)
@@ -245,6 +244,14 @@ def cencle_session(request, id):
     data.payment_status = 'cancle'
     data.save()
     
+    subject = data.customer_name
+    total_seats = data.seats
+    payment = data.bus_schedule.tickit_price
+    total_payment = total_seats*payment
+    message = f' Hii {data.customer_name} Your booking is  incompleted! you are book {data.seats} seats and Painding amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})'
+    address = data.customer_email
+    if address and subject and message:
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [address])
     # return render(request, 'cencle_book.html')
     return redirect('home')
 
@@ -253,8 +260,23 @@ def success_session(request, id):
     data = get_object_or_404(BusBooking, id = id)
     data.payment_status = "success"
     data.save()
+    context = {}
+    subject = data.customer_name
+    total_seats = data.seats
+    payment = data.bus_schedule.tickit_price
+    total_payment = total_seats*payment
+    message = f' Hii {data.customer_name} Your booking is successfully Completed! you are book {data.seats} seats and Paid amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})'
+    address = data.customer_email
+    if address and subject and message:
+            try:
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [address])
+                context['result'] = 'Email sent successfully'
+            except Exception as e:
+                context['result'] = f'Error sending email: {e}'
+    else:
+            context['result'] = 'All fields are required'
     
-    return render(request, 'success_book.html', {'data':data})
+    return render(request, 'success_book.html', {'data':data,'context':context, 'total_payment':total_payment})
 
 def booking_history(request):
     user = request.user

@@ -48,18 +48,27 @@ class IntermidiateStop(models.Model):
     
 class BusBooking(models.Model):
     GENDER_TYPE =(("M","Male"),('F','Female'))
-    PAYMENT_STATUS = (('panding','Panding'),('success','Success'),('cancle','Cancle'))
+    PAYMENT_STATUS = (('panding','Panding'),('success','Success'),('cancle','Cancle'),('refund','Refund'))
     bus_schedule = models.ForeignKey(BusSchedule,on_delete=models.CASCADE, null=True, blank= True)
     user = models.ForeignKey(User, on_delete= models.CASCADE)
     customer_name = models.CharField(max_length=30, null=False)
     customer_age = models.IntegerField()
     customer_email = models.EmailField(max_length=30)
-    gender = models.CharField(max_length=10,choices=GENDER_TYPE)
+    gender = models.CharField(max_length=10, choices = GENDER_TYPE)
     seats = models.IntegerField()
-    payment_status = models.CharField(choices=PAYMENT_STATUS, max_length=20,default="panding")
+    booking_date = models.DateField(auto_now_add=True, null=True, blank=True)
+    payment_status = models.CharField(choices = PAYMENT_STATUS, max_length=20, default="panding")
     def __str__(self):
         return f'{self.customer_name}{self.customer_email}{self.seats}'
+
+
+class Payment(models.Model):
+    bus_booking = models.ForeignKey(BusBooking, on_delete=models.CASCADE, null=True, blank=True)
+    payment_ammount = models.IntegerField()
+    payment_method = models.CharField(max_length=20)
+    cancellation_date = models.DateTimeField()
+    payment_status = models.CharField(choices=BusBooking.PAYMENT_STATUS, max_length=20)
+    cancellation_reason = models.TextField()
     
-    def total_price(self):
-        total = self.bus_schedule.tickit_price * self.seats
-        return total
+    def __str__(self):
+        return f'{self.cancellation_date}{self.payment_method}{self.payment_status}'

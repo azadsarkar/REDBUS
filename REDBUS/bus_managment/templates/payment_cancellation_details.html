@@ -1,0 +1,68 @@
+{% extends 'home.html' %}
+
+{% block search %}
+<div style="margin-top: 100px; text-align: center;">
+    <h1>Your Cancellation Request</h1>
+</div>
+{% endblock search %}
+
+{% block BusData %}
+<div style="margin: 50px auto; width: 80%;">
+    <table style="width: 100%; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">ID</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Customer Name</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Email</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Seats</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Booking Date</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Calletion Date</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Payment Method</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Payment Status</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Cancellation Reason</th>
+                <th style="padding: 10px; border: 1px solid #ddd; background-color: #4CAF50; color: white;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in details %}
+            
+            {% if data.payment_status == 'success' %}  
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.id }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.bus_booking.customer_name }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.bus_booking.customer_email }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.bus_booking.seats }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.bus_booking.booking_date }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.cancellation_date }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.payment_method }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.payment_status }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ data.cancellation_reason }}</td>
+
+                
+                {% if data.payment_status == 'success' %}
+                    
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    <form action="{% url 'accept_cancellation' data.id %}"method="post">
+                        {% csrf_token %}
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <a href=""style="text-decoration: none;">
+                            <button name = 'Action' value = 'reject' style="background-color: #ff4d4d; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 4px;">
+                                Reject
+                            </button>
+                        </a>
+                        <a href="" style="text-decoration: none;">
+                            <button name = 'Action' value = 'accept' style="background-color: #4CAF50; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 4px;">
+                                Accept
+                            </button>
+                        </a>
+                    </div>
+                </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock BusData %}

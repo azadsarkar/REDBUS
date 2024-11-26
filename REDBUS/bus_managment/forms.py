@@ -1,7 +1,8 @@
 from typing import Any
 from django.forms import ModelForm
-from .models import Bus, BusRoute, BusSchedule, IntermidiateStop, BusBooking
+from .models import Bus, BusRoute, BusSchedule, IntermidiateStop, BusBooking, Payment
 from django.core.exceptions import ValidationError
+from django import forms
 class BusForm(ModelForm):
     class Meta:
         model = Bus
@@ -35,3 +36,14 @@ class BusBookingForm(ModelForm):
         if data > 5:
             raise ValidationError('please select lese then 5 seats')
         return data
+    
+    
+
+class PaymentCancleForm(ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['payment_ammount', 'payment_method', 'cancellation_date', 'payment_status', 'cancellation_reason']
+        
+    cancellation_date = forms.DateTimeField(
+    widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
+)

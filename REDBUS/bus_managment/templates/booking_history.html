@@ -48,14 +48,39 @@
         padding: 10px 0;
         margin-top: auto; /* Push footer to the bottom */
     }
+    .messages {
+        list-style-type: none;
+        padding: 10px;
+        text-align: center;
+        color:black;
+    }
+    
+    .messages li {
+        margin: 5px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+    .info { background-color: #d1ecf1; color: #0c5460; }
+    .warning { background-color: #fff3cd; color: #856404; }
+    
 </style>
 {% endblock extra_css %}
-
 {% block search %}
-<h2 style="text-align: center; color: #333;">Booking History</h2>
 {% endblock search %}
-
 {% block BusData %}
+<h2 style="text-align: center; color: #333; margin-top:80px;">Booking History</h2>
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="content">
     <table>
         <thead>
@@ -83,6 +108,9 @@
                 <td>
                     <a href="{% url 'history_delete' bus_data.id %}" onclick="performAction(event, '{{ bus_data.id }}')">
                         <button>DELETE</button>
+                    </a>
+                    <a href="{% url 'cancle_booking' bus_data.id %}">
+                        <button>Cancle</button>
                     </a>
                 </td>
             </tr>

@@ -22,5 +22,8 @@ urlpatterns = [
    path('success_session/<int:id>/', views.success_session, name='success_session'),
    path('booking_history', views.booking_history, name='booking_history'),
    path('delete_history/<int:id>/', views.history_delete, name='history_delete'),
+   path('cancle_booking/<int:id>/', views.ticket_cancle, name='cancle_booking'),
+   path('cancellation_details/', views.cancle_request_details, name='cancellation_details'),
+   path('accept_cancellation/<int:id>', views.accept_cancellation, name='accept_cancellation'),
 ]
 

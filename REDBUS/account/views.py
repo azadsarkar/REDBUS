@@ -17,7 +17,7 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
     PasswordResetConfirmView,
 )
-from bus_managment.models import BusSchedule, BusRoute
+from bus_managment.models import BusSchedule, BusRoute, Feedback
 
 """ Home Page """
 
@@ -43,15 +43,30 @@ def home(request):
         return render(request, 'home.html', {'data':bus_details})
     else:
         data = BusSchedule.objects.all()
-        if not request.user.is_authenticated:
+        rattings = Feedback.objects.all()
+        # ratting_list= []
+        # for ratting in rattings:
+        #     for schedule in data:
+        #         if schedule == ratting.bus_schedule:
+        #             ratting_list.append(
+        #                 {
+        #                     'schedule':schedule,
+        #                     'rattings':ratting.average_ratting(),
+                            
+        #                     }
+        #                 )
+                    
             
-            return render(request, 'home.html', {"data":data})
+        
+        if  not request.user.is_authenticated:
+            
+            return render(request, 'home.html', {"data":data,'rattings':rattings})
         else:
             if request.user.is_superuser:
                 # return render(request, "bus_managment/dashbord.html")
                 return redirect('dashboard')
 
-            return render(request, 'home.html', {"data":data})
+            return render(request, 'home.html', {"data":data, 'rattings':rattings})
 
 
 """user Sign in form Class based View """

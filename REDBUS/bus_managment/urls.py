@@ -24,6 +24,7 @@ urlpatterns = [
    path('delete_history/<int:id>/', views.history_delete, name='history_delete'),
    path('cancle_booking/<int:id>/', views.ticket_cancle, name='cancle_booking'),
    path('cancellation_details/', views.cancle_request_details, name='cancellation_details'),
-   path('accept_cancellation/<int:id>', views.accept_cancellation, name='accept_cancellation'),
+   path('accept_cancellation/<int:id>', views.cancellation_approval, name='accept_cancellation'),
+   path('feedback/<int:id>', views.feedback, name='feedback'),
 ]
 

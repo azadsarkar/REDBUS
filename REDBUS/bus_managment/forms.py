@@ -1,6 +1,6 @@
 from typing import Any
 from django.forms import ModelForm
-from .models import Bus, BusRoute, BusSchedule, IntermidiateStop, BusBooking, Payment
+from .models import Bus, BusRoute, BusSchedule, IntermidiateStop, BusBooking, Payment, Feedback
 from django.core.exceptions import ValidationError
 from django import forms
 class BusForm(ModelForm):
@@ -47,3 +47,16 @@ class PaymentCancleForm(ModelForm):
     cancellation_date = forms.DateTimeField(
     widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
 )
+    
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['safety', 'cleanness', 'staff_behaviour', 'time_punctuality', 'comfort', 'comment']
+        widgets = {
+            'safety': forms.Select(choices=Feedback._meta.get_field('safety').choices),
+            'cleanness': forms.Select(choices=Feedback._meta.get_field('cleanness').choices),
+            'staff_behaviour': forms.Select(choices=Feedback._meta.get_field('staff_behaviour').choices),
+            'time_punctuality': forms.Select(choices=Feedback._meta.get_field('time_punctuality').choices),
+            'comfort': forms.Select(choices=Feedback._meta.get_field('comfort').choices),
+        }

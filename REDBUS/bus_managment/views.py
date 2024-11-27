@@ -7,6 +7,7 @@ from .forms import (
     IntermidiateStopForm,
     BusBookingForm,
     PaymentCancleForm,
+    FeedbackForm
 )
 from .models import BusRoute, BusSchedule, IntermidiateStop, BusBooking, Payment
 from django.core.paginator import Paginator
@@ -15,6 +16,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.contrib import messages
 from datetime import datetime, timedelta
+from django.db.models import Avg
 
 
 def home(request):
@@ -419,7 +421,7 @@ def cancle_request_details(request):
     )
 
 
-def accept_cancellation(request, id):
+def cancellation_approval(request, id):
     if request.user.is_superuser and request.user.is_authenticated:
         data = get_object_or_404(Payment, id=id)
 
@@ -459,3 +461,35 @@ def accept_cancellation(request, id):
             masseges = f"Hii {user_name} your cancellation requset are not accepted!"
             send_mail(user_name, masseges, settings.EMAIL_HOST_USER, [user_email])
             return redirect("cancellation_details")
+
+
+def feedback(request, id):
+    if request.method == 'POST':
+        # Get the BusBooking object
+        data = get_object_or_404(BusBooking, id=id)
+        bus_schedule_id = data.bus_schedule.id
+        bus_schedule_data = get_object_or_404(BusSchedule, id = bus_schedule_id)
+        
+        # Instantiate the form with POST data
+        form = FeedbackForm(request.POST)
+        # Check if form is valid
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user  # Attach the user who is submitting the feedback
+            feedback.booking = data   
+            feedback.bus_schedule = bus_schedule_data # Link the feedback to the specific booking
+            feedback.save()              # Save the feedback
+
+            messages.success(request, 'Thank you for giving feedback!')
+            return redirect('booking_history')
+        else:
+            # Print the form errors for debugging in the server console
+            print(form.errors)
+
+            messages.error(request, 'Your feedback was not submitted. Please try again!')
+            return redirect('booking_history')
+
+    else:
+        # If the method is GET, render the form
+        fm = FeedbackForm()
+        return render(request, 'feedback.html', {'form': fm})

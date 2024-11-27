@@ -1,0 +1,208 @@
+{% extends 'home.html' %}
+
+{% block extra_css %}
+<style>
+    .rating {
+        direction: rtl; /* Right to Left for stars */
+        display: inline-block;
+        font-size: 30px;
+    }
+
+    .rating input {
+        display: none; /* Hide radio buttons */
+    }
+
+    .rating label {
+        color: lightgray;
+        cursor: pointer;
+    }
+
+    .rating input:checked ~ label, /* Highlight when selected */
+    .rating label:hover,
+    .rating label:hover ~ label {
+        color: gold;
+    }
+
+    textarea {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: vertical;
+    }
+
+    input[type="submit"] {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    .rating-value {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .rating-section {
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        width: 60%;
+        margin: 0 auto; /* Center the form */
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+
+    .form-container label {
+        font-weight: bold;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block search %}
+<h1 style="margin-top:80px; text-align: center;">Feedback Form</h1>
+{% endblock search %}
+
+{% block BusData %}
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Safety Rating -->
+        <div class="rating-section">
+            <label for="id_safety">Safety</label>
+            <div class="rating">
+                <input type="radio" name="safety" value="5" id="safety-5">
+                <label for="safety-5">★</label>
+                <input type="radio" name="safety" value="4" id="safety-4">
+                <label for="safety-4">★</label>
+                <input type="radio" name="safety" value="3" id="safety-3">
+                <label for="safety-3">★</label>
+                <input type="radio" name="safety" value="2" id="safety-2">
+                <label for="safety-2">★</label>
+                <input type="radio" name="safety" value="1" id="safety-1">
+                <label for="safety-1">★</label>
+            </div>
+            <div id="safety-display" class="rating-value">Selected Rating: 0</div>
+            <input type="hidden" id="safety-input" name="safety" value="0">
+        </div>
+
+        <!-- Cleanliness Rating -->
+        <div class="rating-section">
+            <label for="id_cleanness">Cleanliness</label>
+            <div class="rating">
+                <input type="radio" name="cleanness" value="5" id="cleanness-5">
+                <label for="cleanness-5">★</label>
+                <input type="radio" name="cleanness" value="4" id="cleanness-4">
+                <label for="cleanness-4">★</label>
+                <input type="radio" name="cleanness" value="3" id="cleanness-3">
+                <label for="cleanness-3">★</label>
+                <input type="radio" name="cleanness" value="2" id="cleanness-2">
+                <label for="cleanness-2">★</label>
+                <input type="radio" name="cleanness" value="1" id="cleanness-1">
+                <label for="cleanness-1">★</label>
+            </div>
+            <div id="cleanness-display" class="rating-value">Selected Rating: 0</div>
+            <input type="hidden" id="cleanness-input" name="cleanness" value="0">
+        </div>
+
+        <!-- Staff Behavior Rating -->
+        <div class="rating-section">
+            <label for="id_staff_behaviour">Staff Behavior</label>
+            <div class="rating">
+                <input type="radio" name="staff_behaviour" value="5" id="staff_behaviour-5">
+                <label for="staff_behaviour-5">★</label>
+                <input type="radio" name="staff_behaviour" value="4" id="staff_behaviour-4">
+                <label for="staff_behaviour-4">★</label>
+                <input type="radio" name="staff_behaviour" value="3" id="staff_behaviour-3">
+                <label for="staff_behaviour-3">★</label>
+                <input type="radio" name="staff_behaviour" value="2" id="staff_behaviour-2">
+                <label for="staff_behaviour-2">★</label>
+                <input type="radio" name="staff_behaviour" value="1" id="staff_behaviour-1">
+                <label for="staff_behaviour-1">★</label>
+            </div>
+            <div id="staff_behaviour-display" class="rating-value">Selected Rating: 0</div>
+            <input type="hidden" id="staff_behaviour-input" name="staff_behaviour" value="0">
+        </div>
+
+        <!-- Time Punctuality Rating -->
+        <div class="rating-section">
+            <label for="id_time_punctuality">Time Punctuality</label>
+            <div class="rating">
+                <input type="radio" name="time_punctuality" value="5" id="time_punctuality-5">
+                <label for="time_punctuality-5">★</label>
+                <input type="radio" name="time_punctuality" value="4" id="time_punctuality-4">
+                <label for="time_punctuality-4">★</label>
+                <input type="radio" name="time_punctuality" value="3" id="time_punctuality-3">
+                <label for="time_punctuality-3">★</label>
+                <input type="radio" name="time_punctuality" value="2" id="time_punctuality-2">
+                <label for="time_punctuality-2">★</label>
+                <input type="radio" name="time_punctuality" value="1" id="time_punctuality-1">
+                <label for="time_punctuality-1">★</label>
+            </div>
+            <div id="time_punctuality-display" class="rating-value">Selected Rating: 0</div>
+            <input type="hidden" id="time_punctuality-input" name="time_punctuality" value="0">
+        </div>
+
+        <!-- Comfort Rating -->
+        <div class="rating-section">
+            <label for="id_comfort">Comfort</label>
+            <div class="rating">
+                <input type="radio" name="comfort" value="5" id="comfort-5">
+                <label for="comfort-5">★</label>
+                <input type="radio" name="comfort" value="4" id="comfort-4">
+                <label for="comfort-4">★</label>
+                <input type="radio" name="comfort" value="3" id="comfort-3">
+                <label for="comfort-3">★</label>
+                <input type="radio" name="comfort" value="2" id="comfort-2">
+                <label for="comfort-2">★</label>
+                <input type="radio" name="comfort" value="1" id="comfort-1">
+                <label for="comfort-1">★</label>
+            </div>
+            <div id="comfort-display" class="rating-value">Selected Rating: 0</div>
+            <input type="hidden" id="comfort-input" name="comfort" value="0">
+        </div>
+
+        <!-- Comment Box -->
+        <div class="rating-section">
+            <label for="id_comment">Comment</label>
+            {{ form.comment }}
+        </div>
+
+        <!-- Submit Button -->
+        <input type="submit" value="Save">
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add event listeners to all rating inputs (radio buttons)
+        document.querySelectorAll('.rating input').forEach(star => {
+            star.addEventListener('change', function () {
+                const ratingType = this.name; // Get the name of the radio button group (e.g., 'safety', 'cleanness', etc.)
+                const ratingValue = this.value; // Get the selected value (1 to 5)
+                
+                // Update the corresponding hidden input with the selected value
+                document.getElementById(ratingType + '-input').value = ratingValue;
+                
+                // Update the displayed selected rating text
+                document.getElementById(ratingType + '-display').textContent = 'Selected Rating: ' + ratingValue;
+            });
+        });
+    });
+</script>
+{% endblock BusData %}

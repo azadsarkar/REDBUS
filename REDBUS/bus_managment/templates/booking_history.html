@@ -93,6 +93,7 @@
                 <th>Bus Name</th>
                 <th>Payment Status</th>
                 <th>Action</th>
+                <th>Feedback</th>
             </tr>
         </thead>
         <tbody>
@@ -109,9 +110,16 @@
                     <a href="{% url 'history_delete' bus_data.id %}" onclick="performAction(event, '{{ bus_data.id }}')">
                         <button>DELETE</button>
                     </a>
+                    
+                    {% if bus_data.payment_status == "success" %}
                     <a href="{% url 'cancle_booking' bus_data.id %}">
-                        <button>Cancle</button>
+                        <button>Cancel</button>
                     </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'feedback' bus_data.id %}">
+                        <button>Feedback</button>
                 </td>
             </tr>
             {% endfor %}

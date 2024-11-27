@@ -274,7 +274,7 @@ def create_session(request, id):
                     }
                 ],
                 mode="payment",
-                success_url=f"http://127.0.0.1:8000/bus_managment/success_session/{data.id}/",
+                success_url=f"http://127.0.0.1:8000/bus_managment/success_session/{data.id}/?session_id={{CHECKOUT_SESSION_ID}}",
                 cancel_url=f"http://127.0.0.1:8000/bus_managment/cencle_session/{data.id}/",
             )
             return redirect(session.url, code=303)  # Redirect user to Stripe Checkout
@@ -305,6 +305,14 @@ def cencle_session(request, id):
 
 def success_session(request, id):
     data = get_object_or_404(BusBooking, id=id)
+    session_id = request.GET.get("session_id")
+    
+    if session_id:
+        # Fetch session data from Stripe
+        session = stripe.checkout.Session.retrieve(session_id)
+        payment_intent_id = session.payment_intent  
+        data.payment_intent_id = payment_intent_id
+    
     data.payment_status = "success"
     data.save()
     context = {}
@@ -355,59 +363,62 @@ def ticket_cancle(request, id):
     if request.method == "GET":
         if data.payment_status == "success":
             fm = PaymentCancleForm()
-            return render(request, "payment_cancle_form.html", {"data": fm})
+            return render(request, "payment_cancle_form.html", {"data": fm, 'amount':data})
         messages.error(request, "You cannot cancel this ticket.")
         return redirect("booking_history")
 
     if request.method == "POST":
         cancellation_data = PaymentCancleForm(request.POST)
         if cancellation_data.is_valid():
-            bus_departure_time = data.bus_schedule.department_time  # time object
-            bus_departure_datetime = datetime.combine(
-                datetime.today(), bus_departure_time
+            # bus_departure_time = data.bus_schedule.department_time  # time object
+            # bus_departure_datetime = datetime.combine(
+            #     datetime.today(), bus_departure_time
+            # )
+
+            # cancellation_request_time_str = request.POST["cancellation_date"]
+            # cancellation_request_time = datetime.strptime(
+            #     cancellation_request_time_str, "%Y-%m-%dT%H:%M"
+            # )
+
+            # two_hours_before_departure = bus_departure_datetime - timedelta(hours=2)
+            # # breakpoint()
+
+            # if cancellation_request_time < two_hours_before_departure:
+
+            #     data.payment_status = "refund"
+            #     data.bus_schedule.avalable_seates += data.seats
+            #     data.save()
+            #     cancellation = cancellation_data.save(commit=False)
+            #     cancellation.payment_status = "refund"
+            #     cancellation.payment_ammount = data.total_payment()
+            #     cancellation.bus_booking = data
+            #     cancellation.save()
+            #     subject = data.customer_name
+            #     total_seats = data.seats
+            #     payment = data.bus_schedule.tickit_price
+            #     total_payment = total_seats * payment
+            #     message = f" Hii {data.customer_name} Your booking is  incompleted! you are book {data.seats} seats and Painding amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})"
+            #     address = data.customer_email
+            #     if address and subject and message:
+            #         send_mail(subject, message, settings.EMAIL_HOST_USER, [address])
+
+            #     messages.success(
+            #         request,
+            #         "Your cancellation was successfully submitted and all information are send mention email address.",
+            #     )
+            #     return redirect("booking_history")
+            # else:
+
+            messages.warning(
+                request,
+                "Cancellation request needs admin approval (within 2 hours of departure).",
             )
-
-            cancellation_request_time_str = request.POST["cancellation_date"]
-            cancellation_request_time = datetime.strptime(
-                cancellation_request_time_str, "%Y-%m-%dT%H:%M"
-            )
-
-            two_hours_before_departure = bus_departure_datetime - timedelta(hours=2)
-            # breakpoint()
-
-            if cancellation_request_time < two_hours_before_departure:
-
-                data.payment_status = "refund"
-                data.bus_schedule.avalable_seates += data.seats
-                data.save()
-                cancellation = cancellation_data.save(commit=False)
-                cancellation.payment_status = "refund"
-                cancellation.bus_booking = data
-                cancellation.save()
-                subject = data.customer_name
-                total_seats = data.seats
-                payment = data.bus_schedule.tickit_price
-                total_payment = total_seats * payment
-                message = f" Hii {data.customer_name} Your booking is  incompleted! you are book {data.seats} seats and Painding amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})"
-                address = data.customer_email
-                if address and subject and message:
-                    send_mail(subject, message, settings.EMAIL_HOST_USER, [address])
-
-                messages.success(
-                    request,
-                    "Your cancellation was successfully submitted and all information are send mention email address.",
-                )
-                return redirect("booking_history")
-            else:
-
-                messages.warning(
-                    request,
-                    "Cancellation request needs admin approval (within 2 hours of departure).",
-                )
-                cancellation = cancellation_data.save(commit=False)
-                cancellation.bus_booking = data
-                cancellation.save()
-                return redirect("booking_history")
+            cancellation = cancellation_data.save(commit=False)
+            cancellation.bus_booking = data
+            cancellation.payment_ammount = data.total_payment()
+            cancellation.payment_status = data.payment_status
+            cancellation.save()
+            return redirect("booking_history")
 
         messages.error(request, "Your cancellation form was not submitted.")
         return redirect("booking_history")
@@ -424,7 +435,7 @@ def cancle_request_details(request):
 def cancellation_approval(request, id):
     if request.user.is_superuser and request.user.is_authenticated:
         data = get_object_or_404(Payment, id=id)
-
+        total_ammount1 = int(data.bus_booking.seats * data.bus_booking.bus_schedule.tickit_price) * 100
         action = request.POST["Action"]
         if action == "accept":
 
@@ -435,23 +446,33 @@ def cancellation_approval(request, id):
                 BusSchedule, id=data.bus_booking.bus_schedule.id
             )
             # manage bus_schedule seats
+            refund = stripe.Refund.create(
+                payment_intent= data.bus_booking.payment_intent_id,
+                amount= total_ammount1
+            )
+            if refund.status == 'succeeded':
+                bus_schedule_data.avalable_seates += data.bus_booking.seats
+                bus_schedule_data.save()
+                # bus_booking  payment status manage
 
-            bus_schedule_data.avalable_seates += data.bus_booking.seats
-            bus_schedule_data.save()
-            # bus_booking  payment status manage
+                bus_booking_data = get_object_or_404(BusBooking, id=data.bus_booking.id)
+                bus_booking_data.payment_status = "refund"
+                bus_booking_data.save()
+                # payment status manag
 
-            bus_booking_data = get_object_or_404(BusBooking, id=data.bus_booking.id)
-            bus_booking_data.payment_status = "refund"
-            bus_booking_data.save()
-            # payment status manag
-
-            data.payment_status = "refund"
-            data.save()
-            user_name = data.bus_booking.customer_name
-            user_email = data.bus_booking.customer_email
-            masseges = f"Hii {user_name} your cancellation requset are accept in and your total ammount is {total_ammount} are refund your bank account within Two days Thank You!"
-            send_mail(user_name, masseges, settings.EMAIL_HOST_USER, [user_email])
-            return redirect("cancellation_details")
+                data.payment_status = "refund"
+                data.save()
+                user_name = data.bus_booking.customer_name
+                user_email = data.bus_booking.customer_email
+                masseges = f"Hii {user_name} your cancellation requset are accept in and your total ammount is {total_ammount} are refund your bank account within Two days Thank You!"
+                send_mail(user_name, masseges, settings.EMAIL_HOST_USER, [user_email])
+                return redirect("cancellation_details")
+            else:
+                user_name = data.bus_booking.customer_name
+                user_email = data.bus_booking.customer_email
+                masseges = f"Hii {user_name} your cancellation requset are not accept in and your total ammount is {total_ammount} are not  refund!"
+                send_mail(user_name, masseges, settings.EMAIL_HOST_USER, [user_email])
+                return redirect("cancellation_details")
 
         elif action == "reject":
             data.payment_status = "cancle"

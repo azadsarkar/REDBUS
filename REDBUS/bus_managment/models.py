@@ -62,6 +62,7 @@ class BusBooking(models.Model):
     seats = models.IntegerField()
     booking_date = models.DateField(auto_now_add=True, null=True, blank=True)
     payment_status = models.CharField(choices = PAYMENT_STATUS, max_length=20, default="panding")
+    payment_intent_id = models.CharField(max_length=250, null=True, blank=True)
     
     def total_payment(self):
         return (self.seats * self.bus_schedule.tickit_price)

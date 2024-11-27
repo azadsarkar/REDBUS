@@ -42,7 +42,7 @@ class BusBookingForm(ModelForm):
 class PaymentCancleForm(ModelForm):
     class Meta:
         model = Payment
-        fields = ['payment_ammount', 'payment_method', 'cancellation_date', 'payment_status', 'cancellation_reason']
+        fields = [ 'payment_method', 'cancellation_date', 'cancellation_reason']
         
     cancellation_date = forms.DateTimeField(
     widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})

@@ -92,6 +92,7 @@
                 <th>Seats</th>
                 <th>Bus Name</th>
                 <th>Payment Status</th>
+                <th>Payment</th>
                 <th>Action</th>
                 <th>Feedback</th>
             </tr>
@@ -103,9 +104,10 @@
                 <td>{{ bus_data.customer_email }}</td>
                 <td>{{ bus_data.customer_age }}</td>
                 <td>{{ bus_data.gender }}</td>
-                <td>{{ bus_data.seats }}</td>
+                <td>{{ bus_data.seats  }} ({{bus_data.selected_seats}})</td>
                 <td>{{ bus_data.bus_schedule.bus.bus_name }}({{ bus_data.bus_schedule.bus.bus_type }})</td>
                 <td>{{ bus_data.payment_status }}</td>
+                <td>{{bus_data.total_payment}}</td>
                 <td>
                     <a href="{% url 'history_delete' bus_data.id %}" onclick="performAction(event, '{{ bus_data.id }}')">
                         <button>DELETE</button>

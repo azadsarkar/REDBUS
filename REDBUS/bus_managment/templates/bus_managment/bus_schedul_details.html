@@ -21,7 +21,6 @@
     <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>
-                <th>ID</th>
                 <th>Route Schedule</th>
                 <th>Bus</th>
                 <th>Source</th>
@@ -37,7 +36,7 @@
         <tbody>
             {% for item in bus_schedule_data %}
             <tr>
-                <td>{{ item.schedule.id }}</td>
+               
                 <td>{{ item.sourse }} - {{ item.destinations }}</td>
                 <td>{{ item.schedule.bus }}</td>
                 <td>{{ item.sourse }}</td>

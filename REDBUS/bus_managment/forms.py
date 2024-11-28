@@ -29,14 +29,11 @@ class IntermidiateStopForm(ModelForm):
 class BusBookingForm(ModelForm):
     class Meta:
         model = BusBooking
-        fields = ['id','customer_name', 'customer_email', 'customer_age','gender', 'seats']
+        fields = ['id','customer_name', 'customer_email', 'customer_age','gender', 'seats','selected_seats']
         
-    def clean_seats(self):
-        data = self.cleaned_data['seats']
-        if data > 5:
-            raise ValidationError('please select lese then 5 seats')
-        return data
-    
+    selected_seats = forms.CharField(widget=forms.HiddenInput()) 
+        
+
     
 
 class PaymentCancleForm(ModelForm):

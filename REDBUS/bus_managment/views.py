@@ -17,6 +17,7 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.db.models import Avg
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -203,54 +204,80 @@ def intermidiate_stop(request):
 def show_bus_details(request, id):
 
     bus_schedule = get_object_or_404(BusSchedule, id=id)
+    inter_route = bus_schedule.bus_route_schedule.intermidiate_stop.all()
     available_seats = bus_schedule.avalable_seates
 
-    return render(request, "bus_details.html", {"bus": bus_schedule})
+    return render(request, "bus_details.html", {"bus": bus_schedule, 'inter_route':inter_route})
 
 
 def book_ticket(request, id):
     data = get_object_or_404(BusSchedule, id=id)
-    available_seats = data.avalable_seates
+    booked_seat = data.schedule.all()
+    booked_seats = []
+    for seats in booked_seat:
+       if seats.payment_status == 'success':
+            if seats.selected_seats:
+                seat_list =seats.selected_seats.split(',') 
+                for seat in seat_list:
+                    booked_seats.append(int(seat))
+
+            
+    available_seats = [seat for seat in range(1, data.bus.bus_capacity + 1)]
+    # for item in available_seats:
+    #     print(item)
+    #     breakpoint()
+    
     if request.user.is_authenticated:
         if request.method == "POST":
+            # Get the form data
             book_data = BusBookingForm(request.POST)
+
             if book_data.is_valid():
+                # Save the booking data, but don't commit to the database yet
                 bus_data = book_data.save(commit=False)
                 bus_data.user = request.user
                 bus_data.bus_schedule = data
+
+                # Get the selected seats from the form (comma-separated string)
+                selected_seats = request.POST.get("selected_seats")
+                seats_count = len(selected_seats.split(","))  # Count the number of seats
+
+                # Check if enough seats are available
+                if seats_count > len(available_seats):
+                    return render(request, "bus_managment/bus_booking.html", {
+                        "form": book_data,
+                        "error_message": "Not enough seats available."
+                    })
+
+                # Save the selected seats and seat count to the database
+                bus_data.selected_seats = selected_seats
+                bus_data.seats = seats_count
                 bus_data.save()
-                seats = int(request.POST["seats"])
-                data.avalable_seates -= seats
+
+                # Update the available seats for the bus schedule
+                data.avalable_seates -= seats_count
                 data.save()
-                # booking_data = request.POST
-                pay_ammount = seats * data.tickit_price
-                return render(
-                    request,
-                    "checkout.html",
-                    {
-                        "data": bus_data,
-                        "pay_ammount": pay_ammount,
-                        "bus_schedule_data": data,
-                    },
-                )
-            else:
-                return render(
-                    request,
-                    "bus_managment/bus_booking.html",
-                    {"form": book_data, "seats_range": range(available_seats)},
-                )
+
+                # Calculate the total price
+                pay_amount = seats_count * data.tickit_price
+
+                # Render checkout page with payment info
+                return render(request, "checkout.html", {
+                    "pay_amount": pay_amount,
+                    "bus_data": bus_data,
+                    "selected_seats": selected_seats
+                })
+
         else:
+            # For GET requests, create a new empty form
             fm = BusBookingForm()
-            context = {
+            return render(request, "bus_managment/bus_booking.html", {
                 "form": fm,
-                "seats_range": range(
-                    1, available_seats + 1
-                ),  # Use range for looping in template
-            }
-            return render(request, "bus_managment/bus_booking.html", context)
+                'booked_seats': booked_seats,
+                "available_seats": available_seats  # Only pass available seats to the template
+            })
     else:
         return redirect("login")
-
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -320,7 +347,7 @@ def success_session(request, id):
     total_seats = data.seats
     payment = data.bus_schedule.tickit_price
     total_payment = total_seats * payment
-    message = f" Hii {data.customer_name} Your booking is successfully Completed! you are book {data.seats} seats and Paid amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})"
+    message = f" Hii {data.customer_name} Your booking is successfully Completed! you are book {data.selected_seats} seats and Paid amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})"
     address = data.customer_email
     if address and subject and message:
         try:
@@ -356,7 +383,7 @@ def history_delete(request, id):
     history_data.delete()
     return redirect("booking_history")
 
-
+@login_required(login_url='login')
 def ticket_cancle(request, id):
     data = get_object_or_404(BusBooking, id=id)
 

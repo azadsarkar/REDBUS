@@ -50,21 +50,22 @@
   <body>
     <div class="container">
       <h2>Payment Details</h2>
-      <h3>Name: {{ data.customer_name }}</h3>
-      <h3>Email: {{ data.customer_email }}</h3>
-      <h3>Age: {{ data.customer_age }}</h3>
-      <h3>Gender: {{ data.gender }}</h3>
-      <h3>Seat: {{ data.seats }}</h3>
+      <h3>Name: {{ bus_data.customer_name }}</h3>
+      <h3>Email: {{ bus_data.customer_email }}</h3>
+      <h3>Age: {{ bus_data.customer_age }}</h3>
+      <h3>Gender: {{ bus_data.gender }}</h3>
+      <h3>Seat: {{ bus_data.seats }}</h3>
+      <h3>selected Seats : {{selected_seats}}</h3>
 
-      <form action="{% url 'checkout_session' data.id %}" method="POST">
+      <form action="{% url 'checkout_session' bus_data.id %}" method="POST">
         {% csrf_token %}
-        <button type="submit" name="ammount" value="{{ pay_ammount }}">
-          Pay ₹{{ pay_ammount }}
+        <button type="submit" name="ammount" value="{{ pay_amount }}">
+          Pay ₹{{ pay_amount }}
         </button>
       </form>
 
       {% comment %} <a href="{% url 'cencle_session' data.id %}">Cancel</a> {% endcomment %}
-      <a href="{% url 'cencle_session' data.id %}" onclick="return confirm('Are you sure you want to cancle Your Ticket?');" class="btn btn-danger btn-sm">Cancle</a>
+      <a href="{% url 'cencle_session' bus_data.id %}" onclick="return confirm('Are you sure you want to cancle Your Ticket?');" class="btn btn-danger btn-sm">Cancle</a>
     </div>
   </body>
 </html>

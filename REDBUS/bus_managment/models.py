@@ -33,6 +33,7 @@ class BusSchedule(models.Model):
     arrivale_time = models.TimeField()
     tickit_price = models.IntegerField()
     avalable_seates = models.IntegerField()
+    
 
     def __str__(self):
         return f"{self.bus.bus_name} ({self.department_time} To {self.arrivale_time})"
@@ -59,7 +60,8 @@ class BusBooking(models.Model):
     customer_age = models.IntegerField()
     customer_email = models.EmailField(max_length=30)
     gender = models.CharField(max_length=10, choices = GENDER_TYPE)
-    seats = models.IntegerField()
+    seats = models.IntegerField(null=True, blank=True)
+    selected_seats = models.CharField(max_length=255, null=True, blank=True)
     booking_date = models.DateField(auto_now_add=True, null=True, blank=True)
     payment_status = models.CharField(choices = PAYMENT_STATUS, max_length=20, default="panding")
     payment_intent_id = models.CharField(max_length=250, null=True, blank=True)

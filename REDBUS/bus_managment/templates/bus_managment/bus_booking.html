@@ -13,21 +13,27 @@
         <!-- Available Seats -->
         <h3 style="font-family: Arial, sans-serif; text-align: center; margin-bottom: 20px; color: #333;">Available Seats</h3>
         <div class="d-flex flex-wrap justify-content-center" style="margin-bottom: 20px;">
-            {% for seat in seats_range %}
-                <span 
-                    class="seat btn btn-outline-primary m-1" 
-                    data-seat="{{ seat }}" 
-                    style="cursor: pointer; padding: 10px 15px; border-radius: 5px; font-size: 14px;">
-                    
-                    {% if seat|divisibleby:2 %}
+            {% for seat in available_seats %}
+            <span 
+                class="seat btn m-1" 
+                data-seat="{{ seat }}" 
+                style="cursor: pointer; padding: 10px 15px; border-radius: 5px; font-size: 14px; 
+                {% if seat in booked_seats %}
+                    background-color: blue;
+                    color: white;
+                    pointer-events: none;  /* Disable click */
+                {% else %}
+                    background-color: #f0f0f0;
+                    border: 1px solid #4CAF50;
+                {% endif %}">
+                {% if seat|divisibleby:2 %}
                     Seat {{ seat }}(W)
-                    {% else %}
+                {% else %}
                     Seat {{ seat }}
-                    {% endif %}
-                        
-                    
-                </span>
-            {% endfor %}
+                {% endif %}
+            </span>
+        {% endfor %}
+           
         </div>
 
         <!-- Booking Form -->
@@ -90,6 +96,7 @@
                 {{ form.seats }}
                 <!-- Hidden input field for selected seats count -->
                 <input type="hidden" id="seatsInput" name="seats" value="0">
+                <input type="hidden" id="id_selected_seats" name="selected_seats" value="">
                 {% if form.seats.errors %}
                     <div style="color: red; font-size: 12px;">
                         {% for error in form.seats.errors %}
@@ -109,41 +116,46 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const seats = document.querySelectorAll(".seat");
-        const seatCountDisplay = document.getElementById("seatCount");
-        const seatsInput = document.getElementById("seatsInput");
-        const seatsField = document.querySelector("input[name='seats']");
+document.addEventListener("DOMContentLoaded", function() {
+    const seats = document.querySelectorAll(".seat");
+    const seatCountDisplay = document.getElementById("seatCount");
+    const seatsInput = document.getElementById("seatsInput");
+    const selectedSeatsInput = document.getElementById("id_selected_seats");
 
-        let selectedSeats = [];
+    let selectedSeats = [];
 
-        seats.forEach(seat => {
-            seat.addEventListener("click", function() {
-                const seatNumber = this.getAttribute("data-seat");
+    seats.forEach(seat => {
+        // If the seat is already booked, it has 'pointer-events: none' and will not be selectable.
+        if (seat.style.pointerEvents === 'none') {
+            return;
+        }
 
-                if (selectedSeats.includes(seatNumber)) {
-                    // Deselect seat
-                    selectedSeats = selectedSeats.filter(s => s !== seatNumber);
-                    this.classList.remove("btn-primary");
-                    this.classList.add("btn-outline-primary");
-                } else {
-                    // Select seat
-                    selectedSeats.push(seatNumber);
-                    this.classList.remove("btn-outline-primary");
-                    this.classList.add("btn-primary");
-                }
+        seat.addEventListener("click", function() {
+            const seatNumber = this.getAttribute("data-seat");
 
-                // Update the seat count in the label
-                seatCountDisplay.textContent = selectedSeats.length;
+            if (selectedSeats.includes(seatNumber)) {
+                // Deselect seat
+                selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+                this.classList.remove("btn-primary");
+                this.classList.add("btn-outline-primary");
+            } else {
+                // Select seat
+                selectedSeats.push(seatNumber);
+                this.classList.remove("btn-outline-primary");
+                this.classList.add("btn-primary");
+            }
 
-                // Update the hidden input field with the selected seats count
-                seatsInput.value = selectedSeats.length;
+            // Update the seat count in the label
+            seatCountDisplay.textContent = selectedSeats.length;
 
-                // Also update the form's seats input field (the value for submission)
-                seatsField.value = selectedSeats.length;
-            });
+            // Update the hidden input field with the selected seats count
+            seatsInput.value = selectedSeats.length;
+
+            // Update the selected seats hidden input field for submission
+            selectedSeatsInput.value = selectedSeats.join(",");
         });
     });
+});
 </script>
 
 {% endblock BusData %}

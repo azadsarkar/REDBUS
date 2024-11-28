@@ -41,11 +41,11 @@ class IntermidiateStopAdmin(admin.ModelAdmin):
 class BusBookingAdmin(admin.ModelAdmin):
     list_display = [
         "customer_name",
-        "customer_age",
         "booking_date",
         "user",
         "customer_email",
         "seats",
+        'selected_seats',
         "payment_status",
         "payment_intent_id",
         'total_payment',

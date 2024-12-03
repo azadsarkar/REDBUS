@@ -541,3 +541,4 @@ def feedback(request, id):
         # If the method is GET, render the form
         fm = FeedbackForm()
         return render(request, 'feedback.html', {'form': fm})
+    

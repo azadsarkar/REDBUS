@@ -33,7 +33,6 @@ class BusSchedule(models.Model):
     arrivale_time = models.TimeField()
     tickit_price = models.IntegerField()
     avalable_seates = models.IntegerField()
-    
 
     def __str__(self):
         return f"{self.bus.bus_name} ({self.department_time} To {self.arrivale_time})"
@@ -87,7 +86,7 @@ class Payment(models.Model):
     
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True,related_name='feedback')
-    booking = models.ForeignKey(BusBooking, on_delete=models.CASCADE, related_name='booking')
+    booking = models.ForeignKey(BusBooking, on_delete=models.CASCADE, related_name='booking',null=True,blank=True)
     bus_schedule = models.ForeignKey(BusSchedule, on_delete=models.CASCADE, related_name='bus_schedule',null=True, blank=True)
     safety = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])
     cleanness = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)])

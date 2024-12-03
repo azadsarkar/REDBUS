@@ -18,13 +18,13 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView,
 )
 from bus_managment.models import BusSchedule, BusRoute, Feedback
+from . import signals
 
 """ Home Page """
 
 def home(request):
     
     if request.method == 'POST':
-       
         sourse1 = request.POST['sourse'].strip()
         sourse1 = sourse1.lower()
         destination1 = request.POST['destination'].strip()
@@ -44,24 +44,13 @@ def home(request):
     else:
         data = BusSchedule.objects.all()
         rattings = Feedback.objects.all()
-        # ratting_list= []
-        # for ratting in rattings:
-        #     for schedule in data:
-        #         if schedule == ratting.bus_schedule:
-        #             ratting_list.append(
-        #                 {
-        #                     'schedule':schedule,
-        #                     'rattings':ratting.average_ratting(),
-                            
-        #                     }
-        #                 )
-                    
-            
+    
+      
         
         if  not request.user.is_authenticated:
             
             return render(request, 'home.html', {"data":data,'rattings':rattings})
-        else:
+        else:  
             if request.user.is_superuser:
                 # return render(request, "bus_managment/dashbord.html")
                 return redirect('dashboard')

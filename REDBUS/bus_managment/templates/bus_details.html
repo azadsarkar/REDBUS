@@ -15,7 +15,7 @@
                 <p><strong>Intermediate Stops:</strong></p>
                 <ul class="list-group">
                     {% for stop in inter_route %}
-                        <li class="list-group-item">{{ stop.stop_name }}</li>
+                        <li class="list-group-item">{{ stop.stop_name }}({{stop.intermidiate_stop_time}})</li>
                     {% endfor %}
                 </ul>
             </div>

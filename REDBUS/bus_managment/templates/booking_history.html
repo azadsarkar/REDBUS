@@ -109,7 +109,7 @@
                 <td>{{ bus_data.payment_status }}</td>
                 <td>{{bus_data.total_payment}}</td>
                 <td>
-                    <a href="{% url 'history_delete' bus_data.id %}" onclick="performAction(event, '{{ bus_data.id }}')">
+                    <a href="{% url 'history_delete' bus_data.id %}" >
                         <button>DELETE</button>
                     </a>
                     

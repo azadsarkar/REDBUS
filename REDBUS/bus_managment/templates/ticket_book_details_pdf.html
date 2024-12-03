@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .highlight-row td {
+            background-color: #ffebcc;
+            font-weight: bold;
+            text-align: center;
+        }
+        .details-header {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Booking Confirmation</h1>
+    <table>
+        <tr class="details-header">
+            <th>Field</th>
+            <th>Details</th>
+        </tr>
+        <tr>
+            <td>Customer Name</td>
+            <td>{{ data.customer_name }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{ data.customer_email }}</td>
+        </tr>
+        <tr>
+            <td>Age</td>
+            <td>{{ data.customer_age }}</td>
+        </tr>
+        <tr>
+            <td>Gender</td>
+            <td>{{ data.gender }}</td>
+        </tr>
+        <tr>
+            <td>Seats</td>
+            <td>{{ data.seats }} ({{ data.selected_seats }})</td>
+        </tr>
+        <tr>
+            <td>Bus Name</td>
+            <td>{{ data.bus_schedule.bus.bus_name }} ({{ data.bus_schedule.bus.bus_type }})</td>
+        </tr>
+        <tr>
+            <td>Payment Status</td>
+            <td>{{ data.payment_status }}</td>
+        </tr>
+        <tr class="highlight-row">
+            <td>Total Payment</td>
+            <td>{{ total_payment }}</td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -13,11 +13,14 @@ from .models import BusRoute, BusSchedule, IntermidiateStop, BusBooking, Payment
 from django.core.paginator import Paginator
 import stripe
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.contrib import messages
 from datetime import datetime, timedelta
 from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
 
 
 def home(request):
@@ -329,41 +332,64 @@ def cencle_session(request, id):
     # return render(request, 'cencle_book.html')
     return redirect("home")
 
-
 def success_session(request, id):
     data = get_object_or_404(BusBooking, id=id)
     session_id = request.GET.get("session_id")
     
     if session_id:
-        # Fetch session data from Stripe
-        session = stripe.checkout.Session.retrieve(session_id)
-        payment_intent_id = session.payment_intent  
-        data.payment_intent_id = payment_intent_id
-    
+        try:
+            # Fetch session data from Stripe
+            session = stripe.checkout.Session.retrieve(session_id)
+            payment_intent_id = session.payment_intent  
+            data.payment_intent_id = payment_intent_id
+        except stripe.error.StripeError as e:
+            return HttpResponse(f"Stripe error: {e}", status=500)
+
+    # Update payment status
     data.payment_status = "success"
     data.save()
-    context = {}
-    subject = data.customer_name
+
+    # Calculate total payment
     total_seats = data.seats
     payment = data.bus_schedule.tickit_price
     total_payment = total_seats * payment
-    message = f" Hii {data.customer_name} Your booking is successfully Completed! you are book {data.selected_seats} seats and Paid amoount is {total_payment} Bus name {data.bus_schedule.bus.bus_name}({data.bus_schedule.bus.bus_type})"
-    address = data.customer_email
-    if address and subject and message:
-        try:
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [address])
-            context["result"] = "Email sent successfully"
-        except Exception as e:
-            context["result"] = f"Error sending email: {e}"
-    else:
-        context["result"] = "All fields are required"
 
+    # Prepare email content
+    message = f"""Hi {data.customer_name}, 
+                  Your booking was successfully completed! 
+                  You booked {data.selected_seats} seats and paid {total_payment}. 
+                  Bus name: {data.bus_schedule.bus.bus_name} ({data.bus_schedule.bus.bus_type})"""
+
+    address = data.customer_email
+    
+    # Generate PDF ticket
+    html_string = render_to_string("ticket_book_details_pdf.html", {
+        "data": data, 
+        "total_payment": total_payment
+    })
+    html = HTML(string=html_string)
+    pdf = html.write_pdf()
+
+    # Create email and attach PDF
+    email = EmailMessage(
+        subject=f"Booking Confirmation: {data.customer_name}",
+        body=message,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[address]
+    )
+    email.attach("ticket_booked.pdf", pdf, 'application/pdf')
+    
+    try:
+        email.send()
+    except Exception as e:
+        return HttpResponse(f"Error sending email: {e}", status=500)
+
+    # Render success page
     return render(
         request,
         "success_book.html",
-        {"data": data, "context": context, "total_payment": total_payment},
+        {"data": data, "total_payment": total_payment}
     )
-
 
 def booking_history(request):
     user = request.user
